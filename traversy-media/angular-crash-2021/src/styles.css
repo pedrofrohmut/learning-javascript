@@ -1,0 +1,100 @@
+/* You can add global styles to this file, and also import other style files */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap");
+
+:root {
+  font-size: 16px;
+  --textColor: #aba499;
+  --bgColor-500: #454a4d;
+  --bgColor-400: #4d5255;
+  --bgColor-300: #353a3d;
+  --bgColor-200: #2c3235;
+  --bgColor-100: #28292c;
+  --green: #9f9;
+  --borderRadius: 8px;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+  background-color: var(--bgColor-500);
+  color: var(--textColor);
+}
+
+.page-container {
+  max-width: 700px;
+  margin: 50px auto 0;
+  border: 3px solid var(--textColor);
+  border-radius: var(--borderRadius);
+  padding: 1.5em 2.5em;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--bgColor-100);
+  color: var(--textColor);
+  border: none;
+  padding: 0.8em 1.6em;
+  border-radius: var(--borderRadius);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.form-control,
+.form-control-check {
+  margin: 0 0 1em 0;
+}
+
+.form-control label {
+  display: block;
+  margin: 0 0 0.25em 0;
+}
+
+.form-control input[type="text"],
+.form-control input[type="password"] {
+  font-size: 1rem;
+  width: 100%;
+  height: 2.6em;
+  padding: 0.3em 1em;
+}
+
+.form-control-check input[type="checkbox"] {
+  height: 1.5rem;
+  width: 1.5rem;
+  display: inline-block;
+  position: relative;
+  top: 0.4em;
+}
+
+.form-control button[type="submit"] {
+  margin-top: 1em;
+}
+
+.form-control-check label {
+  margin: 0 0.5em 0 0;
+}
+
+header button {
+  opacity: 0.7;
+}

@@ -1,0 +1,40 @@
+{
+  "tasks": [
+    {
+      "id": "8b2ae703-b072-4c66-87eb-5f96a6a47348",
+      "text": "Doctor Appointment",
+      "day": "May 5th at 14:00",
+      "hasReminder": true
+    },
+    {
+      "id": "e301a51c-8739-4f6c-9ee5-ffb4d3db6a43",
+      "text": "Metting at School",
+      "day": "May 6th at 15:30",
+      "hasReminder": false
+    },
+    {
+      "id": "1de8fa6d-33ad-4975-826d-ef66be298876",
+      "text": "Food Shopping",
+      "day": "May 7th at 12:30",
+      "hasReminder": false
+    },
+    {
+      "text": "Test 4",
+      "day": "11 Dec, 11:15",
+      "hasReminder": true,
+      "id": "l9W1jgV"
+    },
+    {
+      "text": "Test  NEW",
+      "day": "12 Aug, 14:30",
+      "hasReminder": true,
+      "id": "8K62GW7"
+    },
+    {
+      "text": "Test NEW 2",
+      "day": "Feb 21, 08:00",
+      "hasReminder": true,
+      "id": "SLHn-34"
+    }
+  ]
+}
