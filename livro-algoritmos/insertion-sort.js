@@ -17,12 +17,7 @@ while (i < arr.length) {
     }
     if (j == result.length) {
         result.push(arr[i])
-        // result[j] = arr[i]
     } else {
-        // let temp = result[j]
-        // result[j] = arr[i]
-        // result[j+1] = temp
-
         const leftSlice = result.slice(0, j)
         const rightSlice = result.slice(j)
         result = [ ...leftSlice, arr[i], ...rightSlice ]
