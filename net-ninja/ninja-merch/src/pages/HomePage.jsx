@@ -12,41 +12,18 @@ const HomePage = () => {
     const [products] = createResource(fetchProducts)
 
     return (
-        <div className="grid grid-cols-4 gap-10 my-4">
-            <Card rounded={true} flat={false}>
-                <h2>Ninja Tee, Black</h2>
-                <p>
-                    Dolor eveniet architecto ad a deleniti Ducimus blanditiis error accusamus error
-                    Adipisicing repellat optio reprehenderit laborum fugiat! Aperiam possimus
-                    voluptatum ratione.
-                </p>
-                <button className="btn">Click Me!</button>
-            </Card>
-            <Card rounded={false} flat={false}>
-                <h2>Ninja Tee, White</h2>
-                <p>
-                    Dolor eveniet architecto ad a deleniti Ducimus blanditiis error accusamus error
-                    Adipisicing repellat optio reprehenderit laborum fugiat! Aperiam
-                </p>
-                <button className="btn">Click Me!</button>
-            </Card>
-            <Card rounded={false} flat={true}>
-                <h2>Ninja Tee, Blue</h2>
-                <p>Dolor eveniet architecto ad a deleniti Ducimus blanditiis error accusamus</p>
-                <button className="btn">Click Me!</button>
-            </Card>
-            <Card rounded={true} flat={true}>
-                <h2>Ninja Tee, Green</h2>
-                <p>
-                    Dolor eveniet architecto ad a deleniti Ducimus blanditiis error accusamus error
-                    Adipisicing repellat optio reprehenderit laborum fugiat! Aperiam possimus
-                    voluptatum Adipisicing dolorem aliquid sunt accusantium?
-                </p>
-                <button className="btn">Click Me!</button>
-            </Card>
-
-            <p>{console.log(products(), products.loading)}</p>
-        </div>
+        <Show when={products} loading={<p>loading...</p>}>
+            <div className="grid grid-cols-4 gap-10 my-4">
+                <For each={products()}>
+                    {(product) => (
+                        <Card rounded={true} flat={true}>
+                            <img src={product.img} alt="product image" />
+                            <h2 className="my-3 font-bold">{product.title}</h2>
+                        </Card>
+                    )}
+                </For>
+            </div>
+        </Show>
     )
 }
 
