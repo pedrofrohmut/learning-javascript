@@ -5,6 +5,7 @@ import { Route, Routes, A } from "@solidjs/router"
 
 import HomePage from "./pages/HomePage"
 import CartPage from "./pages/CartPage"
+import ProductDetailPage from "./pages/ProductDetailPage"
 
 const App = () => {
     const [darkTheme, setDarkTheme] = createSignal(false)
@@ -34,6 +35,7 @@ const App = () => {
             <Routes>
                 <Route path="/" component={HomePage} />
                 <Route path="/cart" component={CartPage} />
+                <Route path="/product/:id" component={ProductDetailPage} />
             </Routes>
         </div>
     )
