@@ -5,6 +5,8 @@ import { useCartContext } from "../context/CartContext"
 const CartPage = () => {
     const { items } = useCartContext()
 
+    const total = () => items.reduce((acc, curr) => acc + (curr.quantity * curr.price), 0)
+
     return (
         <div className="max-w-md my-8 mx-auto">
             <Card rouded={true}>
@@ -16,6 +18,10 @@ const CartPage = () => {
                         </p>
                     )}
                 </For>
+
+                <p className="mt-8 pt-4 border-t-2 font-bold">
+                    Total cart price - ${total()}
+                </p>
             </Card>
         </div>
     )

@@ -6,6 +6,7 @@ import { Route, Routes, A } from "@solidjs/router"
 import HomePage from "./pages/HomePage"
 import CartPage from "./pages/CartPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
+import { useCartContext } from "./context/CartContext"
 
 const App = () => {
     const [darkTheme, setDarkTheme] = createSignal(false)
@@ -13,6 +14,10 @@ const App = () => {
     const toggleTheme = () => {
         setDarkTheme(!darkTheme())
     }
+
+    const { items } = useCartContext()
+
+    const quantity = () => items.reduce((acc, curr) => acc + curr.quantity, 0)
 
     return (
         <div class="container m-auto">
@@ -26,7 +31,7 @@ const App = () => {
                 <h1>Ninja Merch</h1>
 
                 <A href="/">Home</A>
-                <A href="/cart">Cart</A>
+                <A href="/cart">Cart <span>({quantity()})</span> </A>
             </header>
 
             {/* Banner */}
