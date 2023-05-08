@@ -1,5 +1,5 @@
 import { useParams } from "@solidjs/router"
-import { createResource } from "solid-js"
+import { createResource, createSignal } from "solid-js"
 
 import { useCartContext } from "../context/CartContext"
 
@@ -16,13 +16,19 @@ const ProductDetailPage = () => {
 
     const { items, setItems } = useCartContext()
 
+    const [isAdding, setIsAdding] = createSignal(false)
+
     const addProduct = () => {
+        setIsAdding(true)
+        setTimeout(() => setIsAdding(false), 1000)
+
         const exists = items.find(x => x.id === product().id)
         if (exists) {
             // inc quantity of existing one
             setItems(x => x.id === product().id, "quantity", x => x + 1)
             return
         }
+
         // add new
         setItems([...items, { ...product(), quantity: 1 }])
     }
@@ -41,7 +47,13 @@ const ProductDetailPage = () => {
                         <p className="my-7 text-2xl">Only ${product().price}</p>
                     </div>
 
-                    <button className="btn" onClick={addProduct}>Add to Cart</button>
+                    <button className="btn" onClick={addProduct} disabled={isAdding()}>Add to Cart</button>
+
+                    <Show when={isAdding()}>
+                        <div className="m-2 p-2 border-amber-500 border-2 rounded-md inline-block">
+                            {product().title} was added to the cart
+                        </div>
+                    </Show>
                 </div>
             </Show>
         </div>
