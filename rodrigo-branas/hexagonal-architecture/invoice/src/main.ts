@@ -1,11 +1,28 @@
 import express from "express"
+import pgPromise from "pg-promise"
 
 const app = express()
+const pgp = pgPromise()
+const dbContext = pgp("postgres://postgres:password@localhost:5101/postgres")
 
-app.get("/cards/:cardNumber/invoices", (req, res) => {
-    res.json({
-        total: 1000
-    })
+app.get("/cards/:cardNumber/invoices", async (req, res) => {
+    // Hard coded here so that i dont have to change the data on database
+    //const now = new Date()
+    const currMonth = 11 //now.getMonth()
+    const currYear = 2022 //now.getFullYear()
+
+    const cardTransactions = await dbContext.query(
+        `select *
+             from card_transactions
+             where card_number = $1
+             and extract(month from date) = $2
+             and extract(year from date) = $3`,
+        [req.params.cardNumber, currMonth, currYear]
+    )
+
+    const total = cardTransactions.reduce((acc: number, x: any) => acc + parseFloat(x.amount), 0)
+
+    res.json({ total })
 })
 
-app.listen(3000, () => console.log("Server started on http://localhost:3000"))
+app.listen(5000, () => console.log("Server started on http://localhost:5000"))

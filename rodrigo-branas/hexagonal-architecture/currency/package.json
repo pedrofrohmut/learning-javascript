@@ -1,5 +1,5 @@
 {
-    "name": "invoice",
+    "name": "currency",
     "version": "1.0.0",
     "license": "MIT",
     "main": "src/main.ts",
@@ -8,9 +8,7 @@
         "test": "jest"
     },
     "dependencies": {
-        "axios": "^1.7.7",
-        "express": "^4.21.0",
-        "pg-promise": "^11.9.1"
+        "express": "^4.21.0"
     },
     "devDependencies": {
         "@types/express": "^4.17.21",
