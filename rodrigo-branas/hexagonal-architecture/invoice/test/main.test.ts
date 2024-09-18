@@ -1,6 +1,9 @@
 import axios from "axios"
 
+const BASE_URL = "http://localhost:5000"
+
 test("", async () => {
-    const { data: invoice } = await axios.get("http://localhost:3000/cards/1234/invoices")
-    expect(invoice.total).toBe(1050)
+    const response = await axios.get(`${BASE_URL}/cards/1234/invoices`)
+    expect(response.status).toBe(200)
+    expect(response.data.total).toBe(1050)
 })
