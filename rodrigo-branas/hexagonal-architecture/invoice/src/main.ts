@@ -25,7 +25,7 @@ app.get("/cards/:cardNumber/invoices", async (req, res) => {
 
     const total = cardTransactions.reduce(
         (acc: number, x: any) =>
-            acc + (x.currency == "USD" ? currencies.usd * parseFloat(x.amount) : parseFloat(x.amount)),
+            acc + (x.currency == "USD" ? currencies.usd : 1) * parseFloat(x.amount),
         0
     )
 
