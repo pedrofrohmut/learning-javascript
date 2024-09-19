@@ -10,7 +10,7 @@ test("Deve calcular a fatura", async () => {
                 { amount: 1000, currency: "BRL" },
                 { amount: 600, currency: "USD" }
             ]
-        },
+        }
     }
 
     const currencyGateway: CurrencyGateway = {

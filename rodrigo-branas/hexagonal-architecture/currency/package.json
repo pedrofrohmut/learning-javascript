@@ -5,7 +5,8 @@
     "main": "src/main.ts",
     "scripts": {
         "dev": "nodemon src/main.ts",
-        "test": "jest"
+        "test": "jest",
+        "format": "prettier --write ."
     },
     "dependencies": {
         "express": "^4.21.0"

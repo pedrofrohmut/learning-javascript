@@ -12,7 +12,6 @@ const app = express()
 const pgp = pgPromise()
 const dbContext: DbContext = pgp("postgres://postgres:password@localhost:5101/postgres")
 
-
 app.get("/cards/:cardNumber/invoices", async (req, res) => {
     const transactionsDao = new TransactionsDao(dbContext)
     const currencyGateway = new CurrencyGateway()

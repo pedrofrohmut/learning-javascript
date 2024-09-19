@@ -1,4 +1,5 @@
 import ITransactionsDao from "../daos/itransactions-dao"
+import InvoiceEntity from "../entities/invoice-entity"
 import ICurrencyGateway from "../gateways/icurrency-gateway"
 
 class CalculateInvoiceUseCase {
@@ -19,12 +20,7 @@ class CalculateInvoiceUseCase {
 
         const cardTransactions = await this.transactionDao.getTransactions(cardNumber, currMonth, currYear)
 
-        const total = cardTransactions.reduce(
-            (acc: number, x: any) => acc + (x.currency == "USD" ? currencies.usd : 1) * parseFloat(x.amount),
-            0
-        )
-
-        return total
+        return InvoiceEntity.getTotalFromCardTransactions(cardTransactions, currencies)
     }
 }
 

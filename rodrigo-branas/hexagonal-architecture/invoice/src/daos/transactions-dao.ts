@@ -2,7 +2,6 @@ import { DbContext } from "../main"
 import ITransactionsDao from "./itransactions-dao"
 
 class TransactionsDao implements ITransactionsDao {
-
     private readonly dbContext: DbContext
 
     constructor(dbContext: DbContext) {
@@ -19,7 +18,6 @@ class TransactionsDao implements ITransactionsDao {
             [cardNumber, month, year]
         )
     }
-
 }
 
 export default TransactionsDao
