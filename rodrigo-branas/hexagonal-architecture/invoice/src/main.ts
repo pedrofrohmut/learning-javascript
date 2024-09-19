@@ -14,7 +14,7 @@ server.addRoute("GET", "/cards/:cardNumber/invoices", async (params: any, _body:
     const currencyGateway = new CurrencyGateway(httpClient)
     const calculateInvoiceUseCase = new CalcutateInvoiceUseCase(transactionsDao, currencyGateway)
     const total = await calculateInvoiceUseCase.execute(params.cardNumber, "http://localhost:5001/currencies")
-    return { total }
+    return total
 })
 
 server.listen(5000, "Server started on http://localhost:5000")
