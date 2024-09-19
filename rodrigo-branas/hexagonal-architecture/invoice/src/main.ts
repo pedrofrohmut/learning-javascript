@@ -1,34 +1,23 @@
 import express from "express"
 import pgPromise from "pg-promise"
-import axios from "axios"
+import pg from "pg-promise/typescript/pg-subset"
+
+import CalcutateInvoiceUseCase from "./usecases/calculate-invoice-usecase"
+import TransactionsDao from "./daos/transactions-dao"
+import CurrencyGateway from "./gateways/currency-gateway"
+
+export type DbContext = pgPromise.IDatabase<{}, pg.IClient>
 
 const app = express()
 const pgp = pgPromise()
-const dbContext = pgp("postgres://postgres:password@localhost:5101/postgres")
+const dbContext: DbContext = pgp("postgres://postgres:password@localhost:5101/postgres")
+
 
 app.get("/cards/:cardNumber/invoices", async (req, res) => {
-    const { data: currencies } = await axios.get("http://localhost:5001/currencies")
-
-    // Hard coded here so that i dont have to change the data on database
-    //const now = new Date()
-    const currMonth = 11 //now.getMonth()
-    const currYear = 2022 //now.getFullYear()
-
-    const cardTransactions = await dbContext.query(
-        `select *
-             from card_transactions
-             where card_number = $1
-             and extract(month from date) = $2
-             and extract(year from date) = $3`,
-        [req.params.cardNumber, currMonth, currYear]
-    )
-
-    const total = cardTransactions.reduce(
-        (acc: number, x: any) =>
-            acc + (x.currency == "USD" ? currencies.usd : 1) * parseFloat(x.amount),
-        0
-    )
-
+    const transactionsDao = new TransactionsDao(dbContext)
+    const currencyGateway = new CurrencyGateway()
+    const calculateInvoiceUseCase = new CalcutateInvoiceUseCase(transactionsDao, currencyGateway)
+    const total = await calculateInvoiceUseCase.execute(req.params.cardNumber)
     res.json({ total })
 })
 
