@@ -13,7 +13,12 @@ server.addRoute("GET", "/cards/:cardNumber/invoices", async (params: any, _body:
     const httpClient = new AxiosAdapter()
     const currencyGateway = new CurrencyGateway(httpClient)
     const calculateInvoiceUseCase = new CalcutateInvoiceUseCase(transactionsDao, currencyGateway)
-    const total = await calculateInvoiceUseCase.execute(params.cardNumber, "http://localhost:5001/currencies")
+
+    const now = new Date()
+    const currMonth = now.getMonth()
+    const currYear = now.getFullYear()
+    const total = await calculateInvoiceUseCase.execute(params.cardNumber, "http://localhost:5001/currencies", currMonth, currYear)
+
     return total
 })
 

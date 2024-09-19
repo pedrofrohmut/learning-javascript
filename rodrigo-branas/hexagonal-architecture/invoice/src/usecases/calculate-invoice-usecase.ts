@@ -11,15 +11,9 @@ class CalculateInvoiceUseCase {
         this.currencyGateway = currencyGateway
     }
 
-    async execute(cardNumber: string, currenciesUrl: string): Promise<number> {
+    async execute(cardNumber: string, currenciesUrl: string, month: number, year: number): Promise<number> {
         const currencies = await this.currencyGateway.getCurrencies(currenciesUrl)
-
-        const now = new Date()
-        const currMonth = now.getMonth()
-        const currYear = now.getFullYear()
-
-        const cardTransactions = await this.transactionDao.getTransactions(cardNumber, currMonth, currYear)
-
+        const cardTransactions = await this.transactionDao.getTransactions(cardNumber, month, year)
         return InvoiceEntity.getTotalFromCardTransactions(cardTransactions, currencies)
     }
 }
