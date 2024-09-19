@@ -15,7 +15,7 @@ server.addRoute("GET", "/cards/:cardNumber/invoices", async (params: any, _body:
     const calculateInvoiceUseCase = new CalcutateInvoiceUseCase(transactionsDao, currencyGateway)
 
     const now = new Date()
-    const currMonth = now.getMonth()
+    const currMonth = now.getMonth() + 1 // +1 because the month is 0 based (0 - january and 11 december)
     const currYear = now.getFullYear()
     const total = await calculateInvoiceUseCase.execute(params.cardNumber, "http://localhost:5001/currencies", currMonth, currYear)
 

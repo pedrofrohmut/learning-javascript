@@ -21,6 +21,6 @@ test("Deve calcular a fatura", async () => {
     const currencyGateway: ICurrencyGateway = new MockCurrencyGateway()
 
     const calculateInvoice = new CalculateInvoiceUseCase(transactionsDao, currencyGateway)
-    const total = await calculateInvoice.execute("1234", "_")
+    const total = await calculateInvoice.execute("1234", "_", 11, 2022)
     expect(total).toBe(2300)
 })
