@@ -1,6 +1,6 @@
-import ITransactionsDao from "../daos/itransactions-dao"
+import ITransactionsDao from "../application/itransactions-dao"
 import InvoiceEntity from "../entities/invoice-entity"
-import ICurrencyGateway from "../gateways/icurrency-gateway"
+import ICurrencyGateway from "../application/icurrency-gateway"
 
 class CalculateInvoiceUseCase {
     private readonly transactionDao: ITransactionsDao
@@ -11,8 +11,8 @@ class CalculateInvoiceUseCase {
         this.currencyGateway = currencyGateway
     }
 
-    async execute(cardNumber: string): Promise<number> {
-        const currencies = await this.currencyGateway.getCurrencies("http://localhost:5001/currencies")
+    async execute(cardNumber: string, currenciesUrl: string): Promise<number> {
+        const currencies = await this.currencyGateway.getCurrencies(currenciesUrl)
 
         const now = new Date()
         const currMonth = now.getMonth()

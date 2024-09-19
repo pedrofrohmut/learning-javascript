@@ -1,5 +1,5 @@
-import ICurrencyGateway from "./icurrency-gateway"
-import IHttpClient from "./ihttp-client"
+import ICurrencyGateway from "../application/icurrency-gateway"
+import IHttpClient from "../application/ihttp-client"
 
 class CurrencyGateway implements ICurrencyGateway {
     private readonly httpClient: IHttpClient

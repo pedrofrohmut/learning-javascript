@@ -1,15 +1,16 @@
-import { DbContext } from "../main"
-import ITransactionsDao from "./itransactions-dao"
+import IConnection from "../application/iconnection"
+import ITransactionsDao from "../application/itransactions-dao"
 
 class TransactionsDao implements ITransactionsDao {
-    private readonly dbContext: DbContext
 
-    constructor(dbContext: DbContext) {
-        this.dbContext = dbContext
+    private readonly connection: IConnection
+
+    constructor(connection: IConnection) {
+        this.connection = connection
     }
 
     async getTransactions(cardNumber: string, month: number, year: number): Promise<any> {
-        return await this.dbContext.query(
+        return await this.connection.query(
             `select *
              from card_transactions
              where card_number = $1

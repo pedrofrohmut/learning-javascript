@@ -1,6 +1,6 @@
 import CalculateInvoiceUseCase from "../../src/usecases/calculate-invoice-usecase"
-import ITransactionsDao from "../../src/daos/itransactions-dao"
-import ICurrencyGateway from "../../src/gateways/icurrency-gateway"
+import ITransactionsDao from "../../src/application/itransactions-dao"
+import ICurrencyGateway from "../../src/application/icurrency-gateway"
 
 test("Deve calcular a fatura", async () => {
     const transactionsDao: ITransactionsDao = {
@@ -21,6 +21,6 @@ test("Deve calcular a fatura", async () => {
     const currencyGateway: ICurrencyGateway = new MockCurrencyGateway()
 
     const calculateInvoice = new CalculateInvoiceUseCase(transactionsDao, currencyGateway)
-    const total = await calculateInvoice.execute("1234")
+    const total = await calculateInvoice.execute("1234", "_")
     expect(total).toBe(2300)
 })

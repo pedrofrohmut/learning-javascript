@@ -1,25 +1,20 @@
-import express from "express"
-import pgPromise from "pg-promise"
-import pg from "pg-promise/typescript/pg-subset"
-
 import CalcutateInvoiceUseCase from "./usecases/calculate-invoice-usecase"
 import TransactionsDao from "./daos/transactions-dao"
 import CurrencyGateway from "./gateways/currency-gateway"
-import HttpClient from "./gateways/http-client"
+import PgPromiseAdapter from "./adapters/pg-promise-adapter"
+import AxiosAdapter from "./adapters/axios-adapter"
+import ExpressAdapter from "./adapters/express-adapter"
 
-export type DbContext = pgPromise.IDatabase<{}, pg.IClient>
+const server = new ExpressAdapter()
 
-const app = express()
-const pgp = pgPromise()
-const dbContext: DbContext = pgp("postgres://postgres:password@localhost:5101/postgres")
-
-app.get("/cards/:cardNumber/invoices", async (req, res) => {
-    const transactionsDao = new TransactionsDao(dbContext)
-    const httpClient = new HttpClient()
+server.addRoute("GET", "/cards/:cardNumber/invoices", async (params: any, _body: any) => {
+    const connection = new PgPromiseAdapter()
+    const transactionsDao = new TransactionsDao(connection)
+    const httpClient = new AxiosAdapter()
     const currencyGateway = new CurrencyGateway(httpClient)
     const calculateInvoiceUseCase = new CalcutateInvoiceUseCase(transactionsDao, currencyGateway)
-    const total = await calculateInvoiceUseCase.execute(req.params.cardNumber)
-    res.json({ total })
+    const total = await calculateInvoiceUseCase.execute(params.cardNumber, "http://localhost:5001/currencies")
+    return { total }
 })
 
-app.listen(5000, () => console.log("Server started on http://localhost:5000"))
+server.listen(5000, "Server started on http://localhost:5000")

@@ -1,7 +1,7 @@
 import axios from "axios"
-import IHttpClient from "./ihttp-client"
+import IHttpClient from "../application/ihttp-client"
 
-class HttpClient implements IHttpClient {
+class AxiosAdapter implements IHttpClient {
     get(url: string): Promise<any> {
         return axios.get(url)
     }
@@ -11,4 +11,4 @@ class HttpClient implements IHttpClient {
     }
 }
 
-export default HttpClient
+export default AxiosAdapter
