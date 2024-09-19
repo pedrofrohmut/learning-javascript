@@ -5,6 +5,7 @@ import pg from "pg-promise/typescript/pg-subset"
 import CalcutateInvoiceUseCase from "./usecases/calculate-invoice-usecase"
 import TransactionsDao from "./daos/transactions-dao"
 import CurrencyGateway from "./gateways/currency-gateway"
+import HttpClient from "./gateways/http-client"
 
 export type DbContext = pgPromise.IDatabase<{}, pg.IClient>
 
@@ -14,7 +15,8 @@ const dbContext: DbContext = pgp("postgres://postgres:password@localhost:5101/po
 
 app.get("/cards/:cardNumber/invoices", async (req, res) => {
     const transactionsDao = new TransactionsDao(dbContext)
-    const currencyGateway = new CurrencyGateway()
+    const httpClient = new HttpClient()
+    const currencyGateway = new CurrencyGateway(httpClient)
     const calculateInvoiceUseCase = new CalcutateInvoiceUseCase(transactionsDao, currencyGateway)
     const total = await calculateInvoiceUseCase.execute(req.params.cardNumber)
     res.json({ total })

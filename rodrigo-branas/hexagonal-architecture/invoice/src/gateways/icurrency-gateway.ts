@@ -1,5 +1,5 @@
 interface ICurrencyGateway {
-    getCurrencies(): Promise<any>
+    getCurrencies(url: string): Promise<any>
 }
 
 export default ICurrencyGateway

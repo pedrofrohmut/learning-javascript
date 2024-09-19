@@ -12,7 +12,7 @@ class CalculateInvoiceUseCase {
     }
 
     async execute(cardNumber: string): Promise<number> {
-        const currencies = await this.currencyGateway.getCurrencies()
+        const currencies = await this.currencyGateway.getCurrencies("http://localhost:5001/currencies")
 
         const now = new Date()
         const currMonth = now.getMonth()

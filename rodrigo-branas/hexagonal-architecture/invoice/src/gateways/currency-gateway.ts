@@ -1,10 +1,15 @@
-import axios from "axios"
-
 import ICurrencyGateway from "./icurrency-gateway"
+import IHttpClient from "./ihttp-client"
 
 class CurrencyGateway implements ICurrencyGateway {
-    async getCurrencies(): Promise<any> {
-        const response = await axios.get("http://localhost:5001/currencies")
+    private readonly httpClient: IHttpClient
+
+    constructor(httpClient: IHttpClient) {
+        this.httpClient = httpClient
+    }
+
+    async getCurrencies(url: string): Promise<any> {
+        const response = await this.httpClient.get(url)
         return response.data
     }
 }
