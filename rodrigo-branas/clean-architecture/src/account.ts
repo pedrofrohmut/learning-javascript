@@ -8,8 +8,16 @@ class Account {
         this.id = id
     }
 
+    getId(): string {
+        return this.id
+    }
+
     getBalance(): number {
         return this.balance
+    }
+
+    setBalance(amount: number): void {
+        this.balance = amount
     }
 
     credit(amount: number): void {
