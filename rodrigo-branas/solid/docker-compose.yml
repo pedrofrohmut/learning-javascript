@@ -1,11 +1,10 @@
 services:
-
-  db:
-    container_name: solid_postgres
-    image: postgres
-    restart: always
-    shm_size: 128mb
-    ports:
-      - 5105:5432
-    environment:
-      POSTGRES_PASSWORD: password
+    db:
+        container_name: solid_postgres
+        image: postgres
+        restart: always
+        shm_size: 128mb
+        ports:
+            - 5105:5432
+        environment:
+            POSTGRES_PASSWORD: password

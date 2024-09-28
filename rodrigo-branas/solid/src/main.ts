@@ -10,19 +10,37 @@ const app = express()
 app.use(express.json())
 
 app.post("/transactions", async (req: Request, res: Response) => {
-    const id = uuidv4()
-
     await dbContext.query(
-        `INSERT INTO transactions (id, code, amount, number_installments, payment_method)
+        `INSERT INTO transactions (id, code, value, number_installments, payment_method)
          VALUES ($1, $2, $3, $4, $5)`,
-        [id, req.body.code, req.body.amount, req.body.numberInstallments, req.body.paymentMethod]
+        [uuidv4(), req.body.code, req.body.value, req.body.numberInstallments, req.body.paymentMethod]
     )
+
+    const addingInstallments = []
+    const N = req.body.numberInstallments
+    const total = req.body.value
+    const portion = parseFloat((total / N).toFixed(2))
+    const extraFromRounding = parseFloat((total - portion * N).toFixed(2))
+
+    for (let i = 1; i <= N; i++) {
+        const value = i == N ? portion + extraFromRounding : portion
+        const addInstallment = dbContext.query(
+            `INSERT INTO installments (id, number, value, transaction_code) VALUES ($1, $2, $3, $4)`,
+            [uuidv4(), i, value, req.body.code]
+        )
+        addingInstallments.push(addInstallment)
+    }
+
+    await Promise.all(addingInstallments)
 
     res.end()
 })
 
 app.get("/transactions/:code", async (req: Request, res: Response) => {
-    const rows = await dbContext.query("SELECT * FROM transactions WHERE code = $1", [req.params.code])
+    const rows = await dbContext.query(
+        "SELECT id, code, value, number_installments, payment_method, created_at FROM transactions WHERE code = $1",
+        [req.params.code]
+    )
 
     if (rows.length < 1) {
         res.status(404)
@@ -30,17 +48,31 @@ app.get("/transactions/:code", async (req: Request, res: Response) => {
         return
     }
 
-    const x = rows[0]
-    const output = {
-        id: x.id,
-        code: x.code,
-        amount: x.amount,
-        numberInstallments: x.number_installments,
-        paymentMethod: x.payment_method,
-        createdAt: x.created_at
+    const installmentsRows = await dbContext.query(
+        "SELECT id, number, value, transaction_code FROM installments WHERE transaction_code = $1",
+        [req.params.code]
+    )
+    const installments: any[] = []
+    for (let i = 0; i < installmentsRows.length; i++) {
+        const x = installmentsRows[i]
+        installments.push({
+            id: x.id,
+            value: parseFloat(x.value),
+            number: parseInt(x.number),
+            transactionCode: x.transaction_code
+        })
     }
 
-    res.json(output)
+    const transaction = rows[0]
+    res.json({
+        id: transaction.id,
+        code: transaction.code,
+        value: transaction.value,
+        numberInstallments: transaction.number_installments,
+        paymentMethod: transaction.payment_method,
+        createdAt: transaction.created_at,
+        installments
+    })
 })
 
 app.listen(3000)
