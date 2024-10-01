@@ -1,18 +1,20 @@
-import Installment from "../../types/Installment"
-import Transaction from "../../types/Transaction"
+import InstallmentDbDto from "../../dtos/installment-db-dto"
+import InstallmentDto from "../../dtos/installment-dto"
+import TransactionDbDto from "../../dtos/transaction-db-dto"
+import TransactionDto from "../../dtos/transaction-dto"
 
 export type Input = {
     code: string
 }
 
-export type Output = Transaction
+export type Output = TransactionDto
 
 class GetTransactionByCodeUseCase {
     constructor() {}
 
     async execute(dbContext: any, input: Input): Promise<Output> {
         const rows = await dbContext.query(
-            "SELECT id, code, value, number_installments, payment_method, created_at FROM transactions WHERE code = $1",
+            "SELECT id, value, number_installments, payment_method, created_at FROM transactions WHERE code = $1",
             [input.code]
         )
 
@@ -21,23 +23,22 @@ class GetTransactionByCodeUseCase {
         }
 
         const installmentsRows = await dbContext.query(
-            "SELECT id, number, value, transaction_code FROM installments WHERE transaction_code = $1",
+            "SELECT id, number, value FROM installments WHERE transaction_code = $1",
             [input.code]
         )
-        const installments: Installment[] = []
+        const installments: InstallmentDbDto[] = []
         for (let i = 0; i < installmentsRows.length; i++) {
-            const x = installmentsRows[i]
-            installments.push({
-                id: x.id,
-                value: parseFloat(x.value),
-                number: parseInt(x.number)
-            } as Installment)
+            const installment = new InstallmentDto()
+            installment.id = installmentsRows[i].id
+            installment.value = parseFloat(installmentsRows[i].value)
+            installment.number = parseInt(installmentsRows[i].number)
+            installments.push(installment)
         }
 
-        const transaction = rows[0]
+        const transaction: TransactionDbDto = rows[0]
         return {
             id: transaction.id,
-            code: transaction.code,
+            code: input.code,
             value: transaction.value,
             numberInstallments: transaction.number_installments,
             paymentMethod: transaction.payment_method,

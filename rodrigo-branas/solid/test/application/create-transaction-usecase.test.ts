@@ -1,9 +1,7 @@
 import pgp from "pg-promise"
 import CreateTransactionUseCase from "../../src/application/usecases/create-transaction-usecase"
-import axios from "axios"
 import GetTransactionByCodeUseCase from "../../src/application/usecases/get-transactions-by-code-usecase"
 
-const BASE_URL = "http://localhost:3000"
 let dbContext: any = null
 
 beforeAll(() => {
@@ -24,12 +22,9 @@ test("Should create a transaction", async () => {
     expect(transactionDb.value).toBe("1000")
     expect(transactionDb.numberInstallments).toBe(12)
     expect(transactionDb.paymentMethod).toBe("credit_card")
-
     expect(transactionDb.installments).toHaveLength(12)
-
-    const first = transactionDb.installments.find((x: any) => x.number === 1)
+    const first = transactionDb.installments?.find((x: any) => x.number === 1)
     expect(first?.value).toBe(83.33)
-
-    const last = transactionDb.installments.find((x: any) => x.number === 12)
+    const last = transactionDb.installments?.find((x: any) => x.number === 12)
     expect(last?.value).toBe(83.37)
 })
