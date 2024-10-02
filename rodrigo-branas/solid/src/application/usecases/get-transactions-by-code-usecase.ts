@@ -1,3 +1,4 @@
+import ITransactionRepository from "../../domain/repositories/itransaction-repository"
 import InstallmentDbDto from "../../dtos/installment-db-dto"
 import InstallmentDto from "../../dtos/installment-dto"
 import TransactionDbDto from "../../dtos/transaction-db-dto"
@@ -10,7 +11,11 @@ export type Input = {
 export type Output = TransactionDto
 
 class GetTransactionByCodeUseCase {
-    constructor() {}
+    private readonly transactionRepository: ITransactionRepository
+
+    constructor(transactionRepository: ITransactionRepository) {
+        this.transactionRepository = transactionRepository
+    }
 
     async execute(dbContext: any, input: Input): Promise<Output> {
         const rows = await dbContext.query(
