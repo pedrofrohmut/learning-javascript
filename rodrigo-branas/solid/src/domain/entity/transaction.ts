@@ -25,6 +25,13 @@ class Transaction {
         this.installments = installments
     }
 
+    public getId = () => this.id
+    public getCode = () => this.code
+    public getValue = () => this.value
+    public getNumberInstallments = () => this.numberInstallments
+    public getPaymentMethod = () => this.paymentMethod
+    public getInstallments = () => this.installments
+
     async generateInstalments() {
         const N = this.numberInstallments
         const total = this.value
@@ -36,7 +43,6 @@ class Transaction {
             this.installments.push(new Installment(uuidv4(), i, currentPortion))
         }
     }
-
 }
 
 export default Transaction

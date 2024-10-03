@@ -1,7 +1,12 @@
 import express, { Request, Response } from "express"
 import pgp from "pg-promise"
-import CreateTransactionUseCase, { Input as CreateTransactionInput } from "./application/usecases/create-transaction-usecase"
-import GetTransactionByCodeUseCase, { Input as GetTransactionByCodeInput } from "./application/usecases/get-transactions-by-code-usecase"
+import CreateTransactionUseCase, {
+    Input as CreateTransactionInput
+} from "./application/usecases/create-transaction-usecase"
+import GetTransactionByCodeUseCase, {
+    Input as GetTransactionByCodeInput
+} from "./application/usecases/get-transactions-by-code-usecase"
+import TransactionDatabaseRepository from "./infra/repositories/transaction-database-repository"
 
 // Creates a single instance to be used for all the request (as adviced on the documentation)
 const dbContext = pgp()("postgres://postgres:password@localhost:5105")
@@ -18,14 +23,16 @@ app.post("/transactions", async (req: Request, res: Response) => {
         numberInstallments: req.body.numberInstallments,
         paymentMethod: req.body.paymentMethod
     }
-    await new CreateTransactionUseCase().execute(dbContext, input)
+    const transactionRepository = new TransactionDatabaseRepository(dbContext)
+    await new CreateTransactionUseCase(transactionRepository).execute(input)
     res.end()
 })
 
 app.get("/transactions/:code", async (req: Request, res: Response) => {
     const input: GetTransactionByCodeInput = { code: req.params.code }
     try {
-        const transaction = await new GetTransactionByCodeUseCase().execute(dbContext, input)
+        const transactionRepository = new TransactionDatabaseRepository(dbContext)
+        const transaction = await new GetTransactionByCodeUseCase(transactionRepository).execute(input)
         res.json(transaction)
     } catch (e: any) {
         res.status(400).send(e.message)
