@@ -1,16 +1,20 @@
 import axios from "axios"
-import Transaction from "../src/domain/entity/transaction"
+import { v4 as uuidv4 } from "uuid"
 
 const BASE_URL = "http://localhost:3000"
 
 test("Should create a transaction", async () => {
-    const code = Math.floor(Math.random() * 1000)
-    const newTransaction = { code: code.toString(), value: 1000, numberInstallments: 12, paymentMethod: "credit_card" }
-    await axios.post(`${BASE_URL}/transactions`, newTransaction)
+    const code = uuidv4()
+    const requestBody = { code, value: 1000, numberInstallments: 12, paymentMethod: "credit_card" }
+    const createResponse = await axios.post(`${BASE_URL}/transactions`, requestBody)
 
-    const { data } = await axios.get(`${BASE_URL}/transactions/${code}`)
+    expect(createResponse.status).toBe(201)
 
-    const transaction: any = data.transaction
+    const getResponse = await axios.get(`${BASE_URL}/transactions/${code}`)
+
+    expect(getResponse.status).toBe(200)
+
+    const transaction = getResponse.data
 
     expect(transaction.value).toBe(1000)
     expect(transaction.numberInstallments).toBe(12)
@@ -21,4 +25,27 @@ test("Should create a transaction", async () => {
     expect(first?.value).toBe(83.33)
     const last = transaction.installments.find((x: any) => x.number == 12)
     expect(last?.value).toBe(83.37)
+})
+
+test("Should use the same instance all the times it is called", async () => {
+    const code = uuidv4()
+    const requestBody = { code, value: 1000, numberInstallments: 12, paymentMethod: "credit_card" }
+    const createResponse = await axios.post(`${BASE_URL}/transactions`, requestBody)
+
+    expect(createResponse.status).toBe(201)
+
+    const getResponse1 = await axios.get(`${BASE_URL}/transactions/${code}`)
+    expect(getResponse1.status).toBe(200)
+
+    const getResponse2 = await axios.get(`${BASE_URL}/transactions/${code}`)
+    expect(getResponse2.status).toBe(200)
+
+    const getResponse3 = await axios.get(`${BASE_URL}/transactions/${code}`)
+    expect(getResponse3.status).toBe(200)
+
+    const getResponse4 = await axios.get(`${BASE_URL}/transactions/${code}`)
+    expect(getResponse4.status).toBe(200)
+
+    const getResponse5 = await axios.get(`${BASE_URL}/transactions/${code}`)
+    expect(getResponse5.status).toBe(200)
 })

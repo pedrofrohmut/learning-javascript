@@ -1,15 +1,27 @@
 import Transaction from "../../domain/entity/transaction"
 import ITransactionRepository from "../../domain/repositories/itransaction-repository"
 
-export type Input = { code: string }
+type Input = { code: string }
 
-export type Output = { transaction: Transaction }
+type Output = { transaction: Transaction }
 
 class GetTransactionByCodeUseCase {
+    private static instance: GetTransactionByCodeUseCase
+
     private readonly transactionRepository: ITransactionRepository
 
-    constructor(transactionRepository: ITransactionRepository) {
+    private constructor(transactionRepository: ITransactionRepository) {
         this.transactionRepository = transactionRepository
+    }
+
+    static getInstance(transactionRepository: ITransactionRepository): GetTransactionByCodeUseCase {
+        if (!GetTransactionByCodeUseCase.instance) {
+            console.log("A new instance used for GetTransactionByCodeUseCase")
+            this.instance = new GetTransactionByCodeUseCase(transactionRepository)
+        } else {
+            console.log("The same instance used for GetTransactionByCodeUseCase")
+        }
+        return this.instance
     }
 
     async execute(input: Input): Promise<Output> {
@@ -21,4 +33,5 @@ class GetTransactionByCodeUseCase {
     }
 }
 
+export { Input, Output }
 export default GetTransactionByCodeUseCase

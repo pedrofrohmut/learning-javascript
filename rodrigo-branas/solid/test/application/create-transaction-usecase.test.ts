@@ -1,25 +1,32 @@
 import pgp from "pg-promise"
+import { v4 as uuidv4 } from "uuid"
 import CreateTransactionUseCase from "../../src/application/usecases/create-transaction-usecase"
 import GetTransactionByCodeUseCase from "../../src/application/usecases/get-transactions-by-code-usecase"
 import TransactionDatabaseRepository from "../../src/infra/repositories/transaction-database-repository"
+import PostgresConnection from "../../src/infra/database/postgres-connection"
+import IConnection from "../../src/infra/database/iconnection"
 
-let dbContext: any = null
+let dbConnection: IConnection | undefined = undefined
 
 beforeAll(() => {
-    dbContext = pgp()("postgres://postgres:password@localhost:5105")
+    dbConnection = new PostgresConnection()
 })
 
-afterAll(() => {
-    dbContext = undefined
+afterAll(async () => {
+    dbConnection && await dbConnection.close()
 })
 
 test("Should create a transaction", async () => {
-    const code = Math.floor(Math.random() * 1000).toString()
+    const code = uuidv4()
     const input = { code, value: 1000, numberInstallments: 12, paymentMethod: "credit_card" }
-    const transactionRepository = new TransactionDatabaseRepository(dbContext)
-    await new CreateTransactionUseCase(transactionRepository).execute(input)
 
-    const { transaction } = await new GetTransactionByCodeUseCase(transactionRepository).execute({ code })
+    const transactionRepository = new TransactionDatabaseRepository(dbConnection!)
+
+    //await new CreateTransactionUseCase(transactionRepository).execute(input)
+    await CreateTransactionUseCase.getInstance(transactionRepository).execute(input)
+
+    //const { transaction } = await new GetTransactionByCodeUseCase(transactionRepository).execute({ code })
+    const { transaction } = await GetTransactionByCodeUseCase.getInstance(transactionRepository).execute({ code })
 
     expect(transaction.getValue()).toBe(1000)
     expect(transaction.getNumberInstallments()).toBe(12)

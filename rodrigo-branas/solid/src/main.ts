@@ -7,14 +7,17 @@ import GetTransactionByCodeUseCase, {
     Input as GetTransactionByCodeInput
 } from "./application/usecases/get-transactions-by-code-usecase"
 import TransactionDatabaseRepository from "./infra/repositories/transaction-database-repository"
-
-// Creates a single instance to be used for all the request (as adviced on the documentation)
-const dbContext = pgp()("postgres://postgres:password@localhost:5105")
+import PostgresConnection from "./infra/database/postgres-connection"
 
 const app = express()
 
 // Middleware to parse the request body when it is on json format
 app.use(express.json())
+
+// Creates a single instance to be used for all the request (as adviced on the documentation)
+const dbConnection = new PostgresConnection()
+
+const transactionRepository = new TransactionDatabaseRepository(dbConnection)
 
 app.post("/transactions", async (req: Request, res: Response) => {
     const input: CreateTransactionInput = {
@@ -23,16 +26,22 @@ app.post("/transactions", async (req: Request, res: Response) => {
         numberInstallments: req.body.numberInstallments,
         paymentMethod: req.body.paymentMethod
     }
-    const transactionRepository = new TransactionDatabaseRepository(dbContext)
-    await new CreateTransactionUseCase(transactionRepository).execute(input)
-    res.end()
+
+    const createTransactionUseCase = CreateTransactionUseCase.getInstance(transactionRepository)
+    await createTransactionUseCase.execute(input)
+    //await new CreateTransactionUseCase(transactionRepository).execute(input)
+
+    res.status(201).end()
 })
 
 app.get("/transactions/:code", async (req: Request, res: Response) => {
     const input: GetTransactionByCodeInput = { code: req.params.code }
+
     try {
-        const transactionRepository = new TransactionDatabaseRepository(dbContext)
-        const transaction = await new GetTransactionByCodeUseCase(transactionRepository).execute(input)
+        const getTransactionByCodeUseCase = GetTransactionByCodeUseCase.getInstance(transactionRepository)
+        const { transaction } = await getTransactionByCodeUseCase.execute(input)
+        //const transaction = await new GetTransactionByCodeUseCase(transactionRepository).execute(input)
+
         res.json(transaction)
     } catch (e: any) {
         res.status(400).send(e.message)

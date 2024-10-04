@@ -5,11 +5,12 @@ import ITransactionRepository from "../../domain/repositories/itransaction-repos
 import Installment from "../../domain/entity/installment"
 import InstallmentDbDto from "../../dtos/installment-db-dto"
 import TransactionDbDto from "../../dtos/transaction-db-dto"
+import IConnection from "../database/iconnection"
 
 class TransactionDatabaseRepository implements ITransactionRepository {
-    private readonly connection: any
+    private readonly connection: IConnection
 
-    constructor(connection: any) {
+    constructor(connection: IConnection) {
         this.connection = connection
     }
 
