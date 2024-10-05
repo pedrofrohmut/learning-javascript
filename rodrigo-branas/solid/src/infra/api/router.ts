@@ -1,56 +1,45 @@
-import express, { Request, Response, Express } from "express"
-
 import IConnection from "../database/iconnection"
 import ITransactionRepository from "../../domain/repositories/itransaction-repository"
-import PostgresConnection from "../database/postgres-connection"
-import TransactionDatabaseRepository from "../repositories/transaction-database-repository"
 import CreateTransactionUseCase, {
     Input as CreateTransactionInput
 } from "../../application/usecases/create-transaction-usecase"
 import GetTransactionByCodeUseCase, {
     Input as GetTransactionByCodeInput
 } from "../../application/usecases/get-transactions-by-code-usecase"
+import IHttpServer from "./ihttp-server"
 
 class Router {
-    private readonly app: Express
+    private readonly httpServer: IHttpServer
     private readonly dbConnection: IConnection
     private readonly transactionRepository: ITransactionRepository
 
-    constructor() {
-        this.app = express()
-
-        // Middleware to parse the request body when it is on json format
-        this.app.use(express.json())
+    constructor(httpServer: IHttpServer, dbConnection: IConnection, transactionRepository: ITransactionRepository) {
+        this.httpServer = httpServer
 
         // Creates a single instance to be used for all the request (as adviced on the documentation)
-        this.dbConnection = new PostgresConnection()
-        this.transactionRepository = new TransactionDatabaseRepository(this.dbConnection)
+        this.dbConnection = dbConnection
 
-        this.app.post("/transactions", async (req: Request, res: Response) => {
+        this.transactionRepository = transactionRepository
+    }
+
+    init(): void {
+        this.httpServer.on("POST", "/transactions", async (_params: any, body: any) => {
             const input: CreateTransactionInput = {
-                code: req.body.code,
-                value: req.body.value,
-                numberInstallments: req.body.numberInstallments,
-                paymentMethod: req.body.paymentMethod
+                code: body.code,
+                value: body.value,
+                numberInstallments: body.numberInstallments,
+                paymentMethod: body.paymentMethod
             }
 
             const createTransactionUseCase = CreateTransactionUseCase.getInstance(this.transactionRepository)
             await createTransactionUseCase.execute(input)
-
-            res.status(201).end()
         })
 
-        this.app.get("/transactions/:code", async (req: Request, res: Response) => {
-            const input: GetTransactionByCodeInput = { code: req.params.code }
-
-            try {
-                const getTransactionByCodeUseCase = GetTransactionByCodeUseCase.getInstance(this.transactionRepository)
-                const { transaction } = await getTransactionByCodeUseCase.execute(input)
-
-                res.json(transaction)
-            } catch (e: any) {
-                res.status(400).send(e.message)
-            }
+        this.httpServer.on("GET", "/transactions/:code", async (params: any, _body: any) => {
+            const input: GetTransactionByCodeInput = { code: params.code }
+            const getTransactionByCodeUseCase = GetTransactionByCodeUseCase.getInstance(this.transactionRepository)
+            const { transaction } = await getTransactionByCodeUseCase.execute(input)
+            return transaction
         })
     }
 
@@ -61,7 +50,7 @@ class Router {
             console.error(err.message)
             process.exit(1)
         }
-        this.app.listen(3000)
+        this.httpServer.listen(3000)
     }
 }
 
