@@ -1,4 +1,6 @@
 import pgp from "pg-promise"
+import LoanDatabaseRepository from "../../infra/repositories/loan-database-repository"
+import InstallmentDatabaseRepository from "../../infra/repositories/installments-database-repository"
 
 type Input = {
     code: string
@@ -23,12 +25,15 @@ type Output = {
 }
 
 class GetLoanByCodeUseCase {
-    constructor() {}
+    constructor(
+        private readonly loanRepository: LoanDatabaseRepository,
+        private readonly installmentRepository: InstallmentDatabaseRepository
+    ) {}
 
     async execute(input: Input): Promise<Output> {
-        const dbContext = pgp()("postgres://postgres:password@localhost:5102")
-        const [loanData] = await dbContext.query("SELECT * FROM loans WHERE code = $1", [input.code])
-        const installmentsData = await dbContext.query("SELECT * FROM installments WHERE loan_code = $1", [input.code])
+        const loanData = await this.loanRepository.findByCode(input.code)
+        const installmentsData = await this.installmentRepository.findByLoanCode(input.code)
+
         const output: Output = {
             id: loanData.id,
             code: input.code,
@@ -38,6 +43,7 @@ class GetLoanByCodeUseCase {
             type: loanData.type,
             installments: []
         }
+
         for (const installmentData of installmentsData) {
             output.installments.push({
                 installmentNumber: parseInt(installmentData.number),
@@ -47,7 +53,7 @@ class GetLoanByCodeUseCase {
                 balance: parseFloat(installmentData.balance)
             })
         }
-        dbContext.$pool.end()
+
         return output
     }
 }

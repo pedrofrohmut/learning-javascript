@@ -1,6 +1,6 @@
 import crypto from "crypto"
 
-import SimulateLoan, { Input as SimulateLoanInput } from "../src/application/usecases/simulate-loan-usecase"
+import SimulateLoan, { Input as SimulateLoanInput } from "../../src/application/usecases/simulate-loan-usecase"
 
 test("Should simulate a financing using the price table", async () => {
     // Given
