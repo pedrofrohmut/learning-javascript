@@ -10,7 +10,7 @@ test("Should apply for a financing using the price table", async () => {
     const connection = new PostgresConnection()
     const loanRepository = new LoanDatabaseRepository(connection)
     const installmentRepository = new InstallmentDatabaseRepository(connection)
-    
+
     // Given
     const code = crypto.randomUUID()
     const startLoanApplication = new StartLoanApplicationUseCase(loanRepository, installmentRepository)
@@ -31,15 +31,16 @@ test("Should apply for a financing using the price table", async () => {
     const output = await getLoanByCode.execute(getLoanInput)
 
     // Then
-    expect(output.installments).toHaveLength(12)
+    expect(output).not.toBeNull()
+    expect(output?.installments).toHaveLength(12)
 
-    const firstInstallment = output.installments.find((x) => x.installmentNumber === 1)
+    const firstInstallment = output?.installments.find((x) => x.getNumber() === 1)
     expect(firstInstallment).toBeDefined()
-    expect(firstInstallment?.balance).toBe(184230.24)
+    expect(firstInstallment?.getBalance()).toBe(184230.24)
 
-    const lastInstallment = output.installments.find((x) => x.installmentNumber === 12)
+    const lastInstallment = output?.installments.find((x) => x.getNumber() === 12)
     expect(lastInstallment).toBeDefined()
-    expect(lastInstallment?.balance).toBe(0)
+    expect(lastInstallment?.getBalance()).toBe(0)
 
     await connection.close()
 })

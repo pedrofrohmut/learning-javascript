@@ -23,6 +23,8 @@
     },
     "scripts": {
         "test": "jest",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "compile": "tsc",
+        "comp-test": "tsc && jest"
     }
 }

@@ -16,7 +16,7 @@ type Input = {
 
 class StartLoanApplicationUseCase {
     constructor(
-        private readonly loanRepository: LoanDatabaseRepository, 
+        private readonly loanRepository: LoanDatabaseRepository,
         private readonly installmentRepository: InstallmentDatabaseRepository
     ) {}
 

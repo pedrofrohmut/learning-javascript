@@ -1,17 +1,9 @@
-import pgp from "pg-promise"
 import LoanDatabaseRepository from "../../infra/repositories/loan-database-repository"
 import InstallmentDatabaseRepository from "../../infra/repositories/installments-database-repository"
+import Installment from "../../domain/entities/Installment"
 
 type Input = {
     code: string
-}
-
-type Installment = {
-    installmentNumber: number
-    amount: number
-    interest: number
-    amortization: number
-    balance: number
 }
 
 type Output = {
@@ -30,33 +22,28 @@ class GetLoanByCodeUseCase {
         private readonly installmentRepository: InstallmentDatabaseRepository
     ) {}
 
-    async execute(input: Input): Promise<Output> {
-        const loanData = await this.loanRepository.findByCode(input.code)
-        const installmentsData = await this.installmentRepository.findByLoanCode(input.code)
+    async execute(input: Input): Promise<Optional<Output>> {
+        const loan = await this.loanRepository.findByCode(input.code)
 
-        const output: Output = {
-            id: loanData.id,
-            code: input.code,
-            amount: loanData.amount,
-            period: loanData.period,
-            rate: loanData.rate,
-            type: loanData.type,
-            installments: []
+        if (!loan) {
+            return null
         }
 
-        for (const installmentData of installmentsData) {
-            output.installments.push({
-                installmentNumber: parseInt(installmentData.number),
-                amount: parseFloat(installmentData.amount),
-                interest: parseFloat(installmentData.interest),
-                amortization: parseFloat(installmentData.amortization),
-                balance: parseFloat(installmentData.balance)
-            })
+        const installments = await this.installmentRepository.findByLoanCode(input.code)
+
+        const output: Output = {
+            id: loan.getId(),
+            code: input.code,
+            amount: loan.getAmount(),
+            period: loan.getPeriod(),
+            rate: loan.getRate(),
+            type: loan.getType(),
+            installments
         }
 
         return output
     }
 }
 
-export { Input, Output, Installment }
+export { Input, Output }
 export default GetLoanByCodeUseCase
