@@ -4,8 +4,9 @@ import Loan, { LoanType } from "../../domain/entities/Loan"
 import Installment from "../../domain/entities/Installment"
 import InstallmentsRepository from "../repositories/installments-repository"
 import LoansRepository from "../repositories/loans-repository"
-import GenerateInstallmentsPrice from "../../domain/entities/GenerateInstallmentsPrice"
-import GenerateInstallmentsSac from "../../domain/entities/GenerateInstallmentsSac"
+import InstallmentsGenerator from "../../domain/entities/InstallmentsGenerator"
+import InstallmentsSacGenerator from "../../domain/entities/InstallmentsSacGenerator"
+import InstallmentsPriceGenerator from "../../domain/entities/InstallmentsPriceGenerator"
 
 type Input = {
     code: string
@@ -37,16 +38,16 @@ class StartLoanApplicationUseCase {
 
         await this.loansRepository.save(loan)
 
-        let generateInstallments = null
+        let installmentsGenerator: InstallmentsGenerator | null = null
         if (input.type === "price") {
-            generateInstallments = new GenerateInstallmentsPrice()
+            installmentsGenerator = new InstallmentsPriceGenerator()
         } else if (input.type === "sac") {
-            generateInstallments = new GenerateInstallmentsSac()
+            installmentsGenerator = new InstallmentsSacGenerator()
         } else {
             throw new Error("Invalid installment type")
         }
 
-        const installments = await generateInstallments.generate(loanAmount, input.period, loanRate, input.code)
+        const installments = await installmentsGenerator.generate(loanAmount, input.period, loanRate, input.code)
         const saves = []
         for (const installment of installments) {
             saves.push(this.installmentRepository.save(installment))

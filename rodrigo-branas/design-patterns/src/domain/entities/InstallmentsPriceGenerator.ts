@@ -1,23 +1,22 @@
 import currency from "currency.js"
-import GenerateInstallments from "./GenerateInstallments"
 import Installment from "./Installment"
+import InstallmentsGenerator from "./InstallmentsGenerator"
 
-class GenerateInstallmentsSac implements GenerateInstallments {
+class InstallmentsPriceGenerator implements InstallmentsGenerator {
     async generate(loanAmount: number, loanPeriod: number, loanRate: number, loanCode: string): Promise<Installment[]> {
         let balance = currency(loanAmount)
 
         const rate = loanRate / 100
-        const amortization = currency(balance.value / loanPeriod)
+        const formula = Math.pow(1 + rate, loanPeriod)
+        const amount = balance.multiply((formula * rate) / (formula - 1))
 
         let installments: Installment[] = []
         let installmentNumber = 1
 
         while (balance.value > 0) {
-            const initialBalance = currency(balance.value)
-            const interest = currency(initialBalance.value * rate)
-            const updatedBalance = currency(initialBalance.value + interest.value)
-            const amount = currency(interest.value + amortization.value)
-            balance = currency(updatedBalance.value - amount.value)
+            const interest = balance.multiply(rate)
+            const amortization = amount.subtract(interest)
+            balance = balance.subtract(amortization)
 
             if (balance.value <= 0.05) {
                 balance = currency(0)
@@ -42,4 +41,4 @@ class GenerateInstallmentsSac implements GenerateInstallments {
     }
 }
 
-export default GenerateInstallmentsSac
+export default InstallmentsPriceGenerator

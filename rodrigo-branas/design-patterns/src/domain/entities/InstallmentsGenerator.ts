@@ -1,7 +1,7 @@
 import Installment from "./Installment"
 
-interface GenerateInstallments {
+interface InstallmentsGenerator {
     generate(loanAmount: number, loanPeriod: number, loanRate: number, loanCode: string): Promise<Installment[]>
 }
 
-export default GenerateInstallments
+export default InstallmentsGenerator
