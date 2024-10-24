@@ -3,13 +3,13 @@ import StartLoanApplicationUseCase, {
 } from "../../src/application/usecases/start-loan-application-usecase"
 import GetLoanByCode, { Input as GetLoanByCodeInput } from "../../src/application/usecases/get-loan-by-code-usecase"
 import PostgresConnection from "../../src/infra/database/postgres-connection"
-import LoanDatabaseRepository from "../../src/infra/repositories/loan-database-repository"
-import InstallmentDatabaseRepository from "../../src/infra/repositories/installments-database-repository"
+import LoansDatabaseRepository from "../../src/infra/repositories/loans-database-repository"
+import InstallmentsDatabaseRepository from "../../src/infra/repositories/installments-database-repository"
 
 test("Should apply for a financing using the price table", async () => {
     const connection = new PostgresConnection()
-    const loanRepository = new LoanDatabaseRepository(connection)
-    const installmentRepository = new InstallmentDatabaseRepository(connection)
+    const loanRepository = new LoansDatabaseRepository(connection)
+    const installmentRepository = new InstallmentsDatabaseRepository(connection)
 
     // Given
     const code = crypto.randomUUID()

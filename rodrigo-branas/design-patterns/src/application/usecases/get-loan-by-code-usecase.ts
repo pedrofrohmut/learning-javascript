@@ -1,5 +1,5 @@
-import LoanDatabaseRepository from "../../infra/repositories/loan-database-repository"
-import InstallmentDatabaseRepository from "../../infra/repositories/installments-database-repository"
+import LoanDatabaseRepository from "../../infra/repositories/loans-database-repository"
+import InstallmentsDatabaseRepository from "../../infra/repositories/installments-database-repository"
 import Installment from "../../domain/entities/Installment"
 
 type Input = {
@@ -19,7 +19,7 @@ type Output = {
 class GetLoanByCodeUseCase {
     constructor(
         private readonly loanRepository: LoanDatabaseRepository,
-        private readonly installmentRepository: InstallmentDatabaseRepository
+        private readonly installmentRepository: InstallmentsDatabaseRepository
     ) {}
 
     async execute(input: Input): Promise<Optional<Output>> {

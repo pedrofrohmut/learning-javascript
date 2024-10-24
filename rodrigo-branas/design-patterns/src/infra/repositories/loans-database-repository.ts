@@ -1,7 +1,8 @@
+import LoansRepository from "../../application/repositories/loans-repository"
 import Loan from "../../domain/entities/Loan"
 import Connection from "../database/connection"
 
-class LoanDatabaseRepository {
+class LoansDatabaseRepository implements LoansRepository {
     constructor(private readonly connection: Connection) {}
 
     async save(loan: Loan): Promise<void> {
@@ -32,4 +33,4 @@ class LoanDatabaseRepository {
     }
 }
 
-export default LoanDatabaseRepository
+export default LoansDatabaseRepository

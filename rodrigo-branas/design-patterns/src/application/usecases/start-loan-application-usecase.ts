@@ -1,9 +1,9 @@
 import currency from "currency.js"
 
-import LoanDatabaseRepository from "../../infra/repositories/loan-database-repository"
+import LoanDatabaseRepository from "../../infra/repositories/loans-database-repository"
 import Loan, { LoanType } from "../../domain/entities/Loan"
 import Installment from "../../domain/entities/Installment"
-import InstallmentDatabaseRepository from "../../infra/repositories/installments-database-repository"
+import InstallmentsDatabaseRepository from "../../infra/repositories/installments-database-repository"
 
 type Input = {
     code: string
@@ -17,7 +17,7 @@ type Input = {
 class StartLoanApplicationUseCase {
     constructor(
         private readonly loanRepository: LoanDatabaseRepository,
-        private readonly installmentRepository: InstallmentDatabaseRepository
+        private readonly installmentRepository: InstallmentsDatabaseRepository
     ) {}
 
     async execute(input: Input): Promise<void> {

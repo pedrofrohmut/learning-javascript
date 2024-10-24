@@ -5,7 +5,7 @@
 
         /* Modules */
         "module": "commonjs",
-        // "types": ["jest", "./types"],
+        "types": ["jest", "./types"],
 
         /* Emit */
         "noEmit": true,
