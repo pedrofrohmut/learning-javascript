@@ -1,9 +1,9 @@
 import currency from "currency.js"
 
-import LoanDatabaseRepository from "../../infra/repositories/loans-database-repository"
 import Loan, { LoanType } from "../../domain/entities/Loan"
 import Installment from "../../domain/entities/Installment"
-import InstallmentsDatabaseRepository from "../../infra/repositories/installments-database-repository"
+import InstallmentsRepository from "../repositories/installments-repository"
+import LoansRepository from "../repositories/loans-repository"
 
 type Input = {
     code: string
@@ -16,8 +16,8 @@ type Input = {
 
 class StartLoanApplicationUseCase {
     constructor(
-        private readonly loanRepository: LoanDatabaseRepository,
-        private readonly installmentRepository: InstallmentsDatabaseRepository
+        private readonly loansRepository: LoansRepository,
+        private readonly installmentRepository: InstallmentsRepository
     ) {}
 
     async execute(input: Input): Promise<void> {
@@ -33,7 +33,7 @@ class StartLoanApplicationUseCase {
         const rate = loanRate / 100
         const loan = new Loan(crypto.randomUUID(), input.code, loanAmount, input.period, rate, input.type)
 
-        await this.loanRepository.save(loan)
+        await this.loansRepository.save(loan)
 
         if (input.type == "price") {
             const formula = Math.pow(1 + rate, input.period)

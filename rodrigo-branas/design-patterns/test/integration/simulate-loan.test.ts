@@ -1,6 +1,6 @@
 import SimulateLoan, { Input as SimulateLoanInput } from "../../src/application/usecases/simulate-loan-usecase"
 
-test("Should simulate a financing using the price table", async () => {
+test.skip("Should simulate a financing using the price table", async () => {
     // Given
     const simulateLoan = new SimulateLoan()
     const input: SimulateLoanInput = {

@@ -1,6 +1,6 @@
-import InstallmentsRepository from "../../application/repositories/installments-repository"
-import Installment from "../../domain/entities/Installment"
-import Connection from "../database/connection"
+import InstallmentsRepository from "../../../application/repositories/installments-repository"
+import Installment from "../../../domain/entities/Installment"
+import Connection from "../../database/connection"
 
 class InstallmentsDatabaseRepository implements InstallmentsRepository {
     constructor(private readonly connection: Connection) {}

@@ -1,6 +1,6 @@
-import LoanDatabaseRepository from "../../infra/repositories/loans-database-repository"
-import InstallmentsDatabaseRepository from "../../infra/repositories/installments-database-repository"
 import Installment from "../../domain/entities/Installment"
+import InstallmentsRepository from "../repositories/installments-repository"
+import LoansRepository from "../repositories/loans-repository"
 
 type Input = {
     code: string
@@ -18,12 +18,12 @@ type Output = {
 
 class GetLoanByCodeUseCase {
     constructor(
-        private readonly loanRepository: LoanDatabaseRepository,
-        private readonly installmentRepository: InstallmentsDatabaseRepository
+        private readonly loansRepository: LoansRepository,
+        private readonly installmentRepository: InstallmentsRepository
     ) {}
 
     async execute(input: Input): Promise<Optional<Output>> {
-        const loan = await this.loanRepository.findByCode(input.code)
+        const loan = await this.loansRepository.findByCode(input.code)
 
         if (!loan) {
             return null

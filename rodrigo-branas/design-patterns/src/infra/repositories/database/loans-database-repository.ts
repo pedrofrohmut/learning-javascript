@@ -1,6 +1,6 @@
-import LoansRepository from "../../application/repositories/loans-repository"
-import Loan from "../../domain/entities/Loan"
-import Connection from "../database/connection"
+import LoansRepository from "../../../application/repositories/loans-repository"
+import Loan from "../../../domain/entities/Loan"
+import Connection from "../../database/connection"
 
 class LoansDatabaseRepository implements LoansRepository {
     constructor(private readonly connection: Connection) {}
