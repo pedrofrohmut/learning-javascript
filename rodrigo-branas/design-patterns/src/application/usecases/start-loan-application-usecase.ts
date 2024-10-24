@@ -4,6 +4,8 @@ import Loan, { LoanType } from "../../domain/entities/Loan"
 import Installment from "../../domain/entities/Installment"
 import InstallmentsRepository from "../repositories/installments-repository"
 import LoansRepository from "../repositories/loans-repository"
+import GenerateInstallmentsPrice from "../../domain/entities/GenerateInstallmentsPrice"
+import GenerateInstallmentsSac from "../../domain/entities/GenerateInstallmentsSac"
 
 type Input = {
     code: string
@@ -35,64 +37,21 @@ class StartLoanApplicationUseCase {
 
         await this.loansRepository.save(loan)
 
-        if (input.type == "price") {
-            const formula = Math.pow(1 + rate, input.period)
-            const amount = balance.multiply((formula * rate) / (formula - 1))
-
-            while (balance.value > 0) {
-                const interest = balance.multiply(rate)
-                const amortization = amount.subtract(interest)
-                balance = balance.subtract(amortization)
-
-                if (balance.value <= 0.05) {
-                    balance = currency(0)
-                }
-
-                const installment = new Installment(
-                    crypto.randomUUID(),
-                    input.code,
-                    installmentNumber,
-                    amount.value,
-                    interest.value,
-                    amortization.value,
-                    balance.value
-                )
-
-                await this.installmentRepository.save(installment)
-
-                installmentNumber++
-            }
+        let generateInstallments = null
+        if (input.type === "price") {
+            generateInstallments = new GenerateInstallmentsPrice()
+        } else if (input.type === "sac") {
+            generateInstallments = new GenerateInstallmentsSac()
+        } else {
+            throw new Error("Invalid installment type")
         }
 
-        if (input.type == "sac") {
-            const amortization = currency(balance.value / input.period)
-
-            while (balance.value > 0) {
-                const initialBalance = currency(balance.value)
-                const interest = currency(initialBalance.value * rate)
-                const updatedBalance = currency(initialBalance.value + interest.value)
-                const amount = currency(interest.value + amortization.value)
-                balance = currency(updatedBalance.value - amount.value)
-
-                if (balance.value <= 0.05) {
-                    balance = currency(0)
-                }
-
-                const installment = new Installment(
-                    crypto.randomUUID(),
-                    input.code,
-                    installmentNumber,
-                    amount.value,
-                    interest.value,
-                    amortization.value,
-                    balance.value
-                )
-
-                await this.installmentRepository.save(installment)
-
-                installmentNumber++
-            }
+        const installments = await generateInstallments.generate(loanAmount, input.period, loanRate, input.code)
+        const saves = []
+        for (const installment of installments) {
+            saves.push(this.installmentRepository.save(installment))
         }
+        await Promise.all(saves)
     }
 }
 
