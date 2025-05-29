@@ -1,0 +1,10 @@
+services:
+    db:
+        container_name: persistence_patterns
+        image: postgres
+        restart: always
+        shm_size: 128mb
+        ports:
+            - 5108:5432
+        environment:
+            POSTGRES_PASSWORD: password
