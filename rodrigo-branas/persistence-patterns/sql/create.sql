@@ -15,7 +15,7 @@ create table users (
 create table tickets (
     ticket_id uuid,
     requester_id uuid not null,
-    assignee_id uuid not null,
+    assignee_id uuid,
     content text,
     start_date timestamp,
     end_date timestamp,
