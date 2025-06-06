@@ -12,10 +12,8 @@ test("Should create a new ticket", async () => {
     // Create new ticket
     const { data: output } = await axios.post(`${BASE_URL}/tickets`, input)
 
-    // Read the ticket newly created
+    // Validate newly created ticket
     const { data: output2 } = await axios.get(`${BASE_URL}/tickets/${output.ticketId}`)
-
-    // Validate response ticket
     expect(output2.ticketId).toBeDefined()
     expect(output2.requesterId).toBe(input.requesterId)
     expect(output2.content).toBe(input.content)

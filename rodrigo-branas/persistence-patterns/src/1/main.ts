@@ -47,7 +47,7 @@ app.post("/tickets/:ticketId/assign", async (req, res) => {
     const [ticket] = await connection.query("select * from tickets where ticket_id = $1", [
         req.params.ticketId
     ])
-    if (ticket.status === "assigned") {
+    if (ticket.status === "closed") {
         throw new Error("This ticket cannot be assigned, because it is already closed.")
     }
 
