@@ -1,4 +1,4 @@
-import Ticket from "../src/3/ticket"
+import Ticket from "../src/repositories/ticket"
 
 test("Should create a ticket", () => {
     const ticket = Ticket.create("requesterId", "content")

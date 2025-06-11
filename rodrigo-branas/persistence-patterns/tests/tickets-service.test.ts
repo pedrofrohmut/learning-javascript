@@ -1,4 +1,4 @@
-import TicketsService from "../src/2/tickets-service"
+import TicketsService from "../src/daos/tickets-service"
 
 test("Should create a new ticket", async () => {
     const service = new TicketsService()
