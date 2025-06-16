@@ -4,9 +4,7 @@ import Loan, { LoanType } from "../../domain/entities/Loan"
 import Installment from "../../domain/entities/Installment"
 import InstallmentsRepository from "../repositories/installments-repository"
 import LoansRepository from "../repositories/loans-repository"
-import InstallmentsGenerator from "../../domain/entities/InstallmentsGenerator"
-import InstallmentsSacGenerator from "../../domain/entities/InstallmentsSacGenerator"
-import InstallmentsPriceGenerator from "../../domain/entities/InstallmentsPriceGenerator"
+import InstallmentsGeneratorFactory from "../../domain/factories/InstallmentsGeneratorFactory"
 
 type Input = {
     code: string
@@ -34,20 +32,22 @@ class StartLoanApplicationUseCase {
         let balance = currency(loanAmount)
         let installmentNumber = 1
         const rate = loanRate / 100
-        const loan = new Loan(crypto.randomUUID(), input.code, loanAmount, input.period, rate, input.type)
 
-        await this.loansRepository.save(loan)
+        // Generate Installments Using a simple factory
+        // const loan = new Loan(crypto.randomUUID(), input.code, loanAmount, input.period, rate, input.type)
+        // await this.loansRepository.save(loan)
+        // let installmentsGenerator = InstallmentsGeneratorFactory.create(input.type)
+        // const installments = await installmentsGenerator.generate(loanAmount, input.period, loanRate, input.code)
 
-        let installmentsGenerator: InstallmentsGenerator | null = null
+        let installments: Installments[] = []
         if (input.type === "price") {
-            installmentsGenerator = new InstallmentsPriceGenerator()
+            const loan = new LoanPrice(crypto.randomUUID(), input.code, loanAmount, input.period, rate, input.type)
+            loan.generateInstallments()
         } else if (input.type === "sac") {
-            installmentsGenerator = new InstallmentsSacGenerator()
-        } else {
-            throw new Error("Invalid installment type")
+            const loan = new LoanSac(crypto.randomUUID(), input.code, loanAmount, input.period, rate, input.type)
+            loan.generateInstallments()
         }
 
-        const installments = await installmentsGenerator.generate(loanAmount, input.period, loanRate, input.code)
         const saves = []
         for (const installment of installments) {
             saves.push(this.installmentRepository.save(installment))
