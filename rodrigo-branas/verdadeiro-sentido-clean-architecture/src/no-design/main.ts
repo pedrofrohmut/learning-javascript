@@ -98,7 +98,7 @@ app.post("/bids", async (req: Request, res: Response) => {
     const bid = req.body
     bid.bidId = crypto.randomUUID()
 
-    // Check bid exists
+    // Check auction exists
     const [auctionDb] = await connection.query("select * from auctions where auction_id = $1", [
         bid.auctionId
     ])
@@ -106,11 +106,20 @@ app.post("/bids", async (req: Request, res: Response) => {
         throw new Error("Auction not found")
     }
 
-    // Validate bid amount
+    // Get highest bid
     const [highestBidDb] = await connection.query(
         "select * from bids where auction_id = $1 order by amount desc limit 1",
         [auctionDb.auction_id]
     )
+
+    // Validate bid customer
+    if (highestBidDb && bid.customer === highestBidDb.customer) {
+        res.status(400)
+        res.send("Invalid customer. The highest bid customer cannot place new bids.")
+        return
+    }
+
+    // Validate bid amount
     let validBidAmount = 0
     if (highestBidDb) {
         validBidAmount = highestBidDb.amount + auctionDb.min_increment
