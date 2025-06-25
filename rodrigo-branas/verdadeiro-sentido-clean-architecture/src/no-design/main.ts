@@ -98,11 +98,25 @@ app.post("/bids", async (req: Request, res: Response) => {
     const bid = req.body
     bid.bidId = crypto.randomUUID()
 
-    const [auction] = await connection.query(`select * from auctions where auction_id = $1`, [
+    const [auctionDb] = await connection.query(`select * from auctions where auction_id = $1`, [
         bid.auctionId
     ])
-    if (!auction) {
+    if (!auctionDb) {
         throw new Error("Auction not found")
+    }
+
+    const bidDate = new Date(bid.date).getTime()
+    const startDate = new Date(auctionDb.start_date).getTime()
+    const endDate = new Date(auctionDb.end_date).getTime()
+    if (bidDate < startDate) {
+        res.status(422)
+        res.send("Too early. Auction is not opened yet.")
+        return
+    }
+    if (bidDate >= endDate) {
+        res.status(422)
+        res.send("Too late. Auction is already closed.")
+        return
     }
 
     try {
