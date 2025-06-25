@@ -10,7 +10,10 @@ test("Should create an auction e give it 3 bids", async () => {
         minIncrement: 10,
         startAmount: 1000
     }
-    const { data: createAuctionOutput } = await axios.post(`${BASE_URL}/auctions`, createAuctionInput)
+    const { data: createAuctionOutput } = await axios.post(
+        `${BASE_URL}/auctions`,
+        createAuctionInput
+    )
     expect(createAuctionOutput.auctionId).toBeDefined()
 
     // Create 1st bid
@@ -44,11 +47,12 @@ test("Should create an auction e give it 3 bids", async () => {
     expect(createBid3Output.bidId).toBeDefined()
 
     // Check for the highest bid
-    const { data: auctionOutput } = await axios.get(`${BASE_URL}/auctions/${createAuctionOutput.auctionId}`)
+    const { data: auctionOutput } = await axios.get(
+        `${BASE_URL}/auctions/${createAuctionOutput.auctionId}`
+    )
     expect(auctionOutput.highestBid).not.toBeNull()
     expect(auctionOutput.highestBid.customer).toBe("c")
     expect(auctionOutput.highestBid.amount).toBe(1100)
-
 })
 
 test("Should not be possible to bid outside the auction time", async () => {
@@ -59,7 +63,10 @@ test("Should not be possible to bid outside the auction time", async () => {
         minIncrement: 10,
         startAmount: 1000
     }
-    const { data: createAuctionOutput } = await axios.post(`${BASE_URL}/auctions`, createAuctionInput)
+    const { data: createAuctionOutput } = await axios.post(
+        `${BASE_URL}/auctions`,
+        createAuctionInput
+    )
     expect(createAuctionOutput.auctionId).toBeDefined()
 
     // Create late bid
@@ -91,4 +98,84 @@ test("Should not be possible to bid outside the auction time", async () => {
         expect(err.status).toBe(422)
         expect(err.response.data).toBe("Too early. Auction is not opened yet.")
     }
+})
+
+test("The new bid must be bigger than the highest bid + minIncrement", async () => {
+    // Create an auction
+    const createAuctionInput = {
+        startDate: "2025-03-01T10:00:00Z",
+        endDate: "2025-03-01T12:00:00Z",
+        minIncrement: 10,
+        startAmount: 1000
+    }
+    const { data: createAuctionOutput } = await axios.post(
+        `${BASE_URL}/auctions`,
+        createAuctionInput
+    )
+    expect(createAuctionOutput.auctionId).toBeDefined()
+
+    // Create 1st bid
+    const firstBidInput = {
+        auctionId: createAuctionOutput.auctionId,
+        customer: "a",
+        amount: 1000,
+        date: "2025-03-01T11:00:00Z"
+    }
+    const { data: createFirstBidOutput } = await axios.post(`${BASE_URL}/bids`, firstBidInput)
+    expect(createFirstBidOutput.bidId).toBeDefined()
+
+    // Create 2nd bid - Same amount of highest
+    const sameAmountBidInput = {
+        auctionId: createAuctionOutput.auctionId,
+        customer: "b",
+        amount: 1000,
+        date: "2025-03-01T11:00:00Z"
+    }
+    let sameAmountError: AxiosError | null = null
+    try {
+        await axios.post(`${BASE_URL}/bids`, sameAmountBidInput)
+    } catch (err: any) {
+        sameAmountError = err
+    }
+    expect(sameAmountError).not.toBeNull()
+    if (sameAmountError) {
+        expect(sameAmountError).toBeInstanceOf(AxiosError)
+        expect(sameAmountError.status).toBe(400)
+        expect(sameAmountError?.response?.data).toBe(
+            "The bid amount is too low. Bid must be at least 1010."
+        )
+    }
+
+    // Create 3rd bid - Amount smaller than highest + minIncrement
+    const tooSmallAmountBidInput = {
+        auctionId: createAuctionOutput.auctionId,
+        customer: "c",
+        amount: 900,
+        date: "2025-03-01T11:00:00Z"
+    }
+    let tooSmallAmountError: AxiosError | null = null
+    try {
+        await axios.post(`${BASE_URL}/bids`, tooSmallAmountBidInput)
+    } catch (err: any) {
+        tooSmallAmountError = err
+    }
+    expect(tooSmallAmountError).not.toBeNull()
+    if (tooSmallAmountError) {
+        expect(tooSmallAmountError).toBeInstanceOf(AxiosError)
+        expect(tooSmallAmountError.status).toBe(400)
+        expect(tooSmallAmountError?.response?.data).toBe(
+            "The bid amount is too low. Bid must be at least 1010."
+        )
+    }
+
+    // Create 4th bid - Valid bid amount > (highestBid + minIncrement)
+    const validBidInput = {
+        auctionId: createAuctionOutput.auctionId,
+        customer: "d",
+        amount: firstBidInput.amount + createAuctionInput.minIncrement + 1,
+        date: "2025-03-01T11:00:00Z"
+    }
+    const validBidResponse = await axios.post(`${BASE_URL}/bids`, validBidInput)
+    expect(validBidResponse.status).toBe(200)
+    expect(validBidResponse.data.bidId).toBeDefined()
 })
