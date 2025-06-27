@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import crypto from "crypto"
 import pgp from "pg-promise"
 const types = require("pg").types
+import WebSocket, { WebSocketServer } from "ws"
 
 import { postgres_string } from "../constants"
 
@@ -15,6 +16,13 @@ types.setTypeParser(types.builtins.FLOAT4, parseFloat)
 const connection = pgp()(postgres_string)
 
 const app = express()
+
+const wss = new WebSocketServer({ port: 8080 })
+const connections: any = []
+
+wss.on("connection", (ws) => {
+    connections.push(ws)
+})
 
 // Middlewares
 app.use(express.json())
@@ -158,6 +166,10 @@ app.post("/bids", async (req: Request, res: Response) => {
         res.status(500)
         res.send("Error trying to create a new bid")
         return
+    }
+
+    for (const connection of connections) {
+        connection.send(Buffer.from(JSON.stringify(bid)))
     }
 
     res.json({ bidId: bid.bidId })

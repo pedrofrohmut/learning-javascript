@@ -1,6 +1,22 @@
 import axios, { AxiosError } from "axios"
+import WebSocket, { WebSocketServer } from "ws"
 
 const BASE_URL = "http://localhost:5000"
+
+let ws: WebSocket
+const messages: any = []
+
+beforeEach(async () => {
+    ws = new WebSocket("ws://localhost:8080")
+    ws.on("message", (data) => {
+        // console.log(JSON.parse(data.toString()))
+        messages.push(JSON.parse(data.toString()))
+    })
+})
+
+afterEach(async () => {
+    ws.close()
+})
 
 test("Should create an auction e give it 3 bids", async () => {
     // Create an auction
@@ -53,6 +69,11 @@ test("Should create an auction e give it 3 bids", async () => {
     expect(auctionOutput.highestBid).not.toBeNull()
     expect(auctionOutput.highestBid.customer).toBe("c")
     expect(auctionOutput.highestBid.amount).toBe(1100)
+
+    expect(messages).toHaveLength(3)
+    expect(messages.at(0).customer).toBe("a")
+    expect(messages.at(1).customer).toBe("b")
+    expect(messages.at(2).customer).toBe("c")
 })
 
 test("Should not be possible to bid outside the auction time", async () => {
