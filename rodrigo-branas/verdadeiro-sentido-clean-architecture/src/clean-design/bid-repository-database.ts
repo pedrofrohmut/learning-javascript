@@ -3,10 +3,19 @@ import DatabaseConnection from "./database-connection"
 
 // TODO: Make it singleton
 class BidRepositoryDatabase implements BidRepository {
+    private static instance: BidRepositoryDatabase
+
     private readonly connection: DatabaseConnection
 
-    constructor(connection: DatabaseConnection) {
+    private constructor(connection: DatabaseConnection) {
         this.connection = connection
+    }
+
+    static getInstance(connection: DatabaseConnection) {
+        if (!this.instance) {
+            this.instance = new BidRepositoryDatabase(connection)
+        }
+        return this.instance
     }
 
     async save(bid: any): Promise<void> {

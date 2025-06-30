@@ -1,12 +1,11 @@
 import express, { Request, Response } from "express"
-import crypto from "crypto"
 const types = require("pg").types
 import { WebSocketServer } from "ws"
 
 import AuctionRepositoryDatabase from "../clean-design/auction-repository-database"
 import BidRepositoryDatabase from "../clean-design/bid-repository-database"
 import PgDatabaseConnection from "../clean-design/pg-database-connection"
-import CreateAuctionUseCase, { CreateAuctionInput } from "./create-auction-usecase"
+import CreateAuctionUseCase from "./create-auction-usecase"
 import GetAuctionByIdUseCase from "./get-auction-by-id-usecase"
 import MakeBidUseCase from "./create-bid-usecase"
 
@@ -30,8 +29,8 @@ wss.on("connection", (ws) => {
 app.use(express.json())
 
 const databaseConnection = new PgDatabaseConnection()
-const auctionRepository = new AuctionRepositoryDatabase(databaseConnection)
-const bidRepository = new BidRepositoryDatabase(databaseConnection)
+const auctionRepository = AuctionRepositoryDatabase.getInstance(databaseConnection)
+const bidRepository = BidRepositoryDatabase.getInstance(databaseConnection)
 
 // Create auction endpoint
 app.post("/auctions", async (req: Request, res: Response) => {

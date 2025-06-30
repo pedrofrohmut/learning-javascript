@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios"
-import WebSocket, { WebSocketServer } from "ws"
+import WebSocket from "ws"
 
 const BASE_URL = "http://localhost:5000"
 
