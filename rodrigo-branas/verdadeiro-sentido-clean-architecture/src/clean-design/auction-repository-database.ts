@@ -1,7 +1,8 @@
 import AuctionRepository from "./auction-repository"
 import DatabaseConnection from "./database-connection"
 
-export default class AuctionRepositoryDatabase implements AuctionRepository {
+// TODO: Make it singleton
+class AuctionRepositoryDatabase implements AuctionRepository {
     private readonly connection: DatabaseConnection
 
     constructor(connection: DatabaseConnection) {
@@ -30,3 +31,5 @@ export default class AuctionRepositoryDatabase implements AuctionRepository {
         return auctionDb
     }
 }
+
+export default AuctionRepositoryDatabase

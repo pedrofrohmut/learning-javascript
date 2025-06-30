@@ -1,6 +1,7 @@
 import BidRepository from "./bid-repository"
 import DatabaseConnection from "./database-connection"
 
+// TODO: Make it singleton
 class BidRepositoryDatabase implements BidRepository {
     private readonly connection: DatabaseConnection
 
