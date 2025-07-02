@@ -33,10 +33,7 @@ class AuctionRepositoryDatabase implements AuctionRepository {
     }
 
     async get(auctionId: string): Promise<Auction | null> {
-        const [auctionDb] = await this.connection.query(
-            `select * from auctions where auction_id = $1`,
-            [auctionId]
-        )
+        const [auctionDb] = await this.connection.query(`select * from auctions where auction_id = $1`, [auctionId])
         if (!auctionId) {
             return null
         }

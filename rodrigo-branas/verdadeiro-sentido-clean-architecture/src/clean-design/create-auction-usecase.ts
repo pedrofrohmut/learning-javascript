@@ -21,7 +21,13 @@ class CreateAuctionUseCase {
     }
 
     async execute(input: CreateAuctionInput): Promise<CreateAuctionOutput> {
-        const auction = new Auction(crypto.randomUUID(), input.startDate, input.endDate, input.minIncrement, input.startAmount)
+        const auction = new Auction(
+            crypto.randomUUID(),
+            input.startDate,
+            input.endDate,
+            input.minIncrement,
+            input.startAmount
+        )
         try {
             await this.auctionRepository.save(auction)
         } catch (err: any) {

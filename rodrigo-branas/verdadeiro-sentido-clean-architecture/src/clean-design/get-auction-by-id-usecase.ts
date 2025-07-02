@@ -21,7 +21,7 @@ class GetAuctionByIdUseCase {
             auctionDb = await this.auctionRepository.get(auctionId)
         } catch (err: any) {
             console.error("Get Auction Error: " + err.message)
-            throw new Error("Error trying to get a auction")
+            throw new Error("Error trying to get an auction")
         }
         if (auctionDb === null) {
             throw new Error("Auction not found")

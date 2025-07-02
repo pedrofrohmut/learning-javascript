@@ -1,7 +1,7 @@
 import pgp from "pg-promise"
 
 import { postgres_string } from "../constants"
-import DatabaseConnection from "./database-connection";
+import DatabaseConnection from "./database-connection"
 
 class PgDatabaseConnection implements DatabaseConnection {
     private readonly connection: any
@@ -17,7 +17,6 @@ class PgDatabaseConnection implements DatabaseConnection {
     close(): Promise<void> {
         return this.connection.$pool.end()
     }
-
 }
 
 export default PgDatabaseConnection
