@@ -1,6 +1,8 @@
+import Auction from "./auction-entity"
+
 interface AuctionRepository {
-    save(auction: any): Promise<void>
-    get(auctionId: string): Promise<any>
+    save(auction: Auction): Promise<void>
+    get(auctionId: string): Promise<Auction | null>
 }
 
 export default AuctionRepository

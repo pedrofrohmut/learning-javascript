@@ -1,6 +1,8 @@
+import Bid from "./bid-entity"
+
 interface BidRepository {
-    save(bid: any): Promise<void>
-    getHighestByAuctionId(auctionId: string): Promise<any>
+    save(bid: Bid): Promise<void>
+    getHighestByAuctionId(auctionId: string): Promise<Bid | null>
 }
 
 export default BidRepository

@@ -1,3 +1,4 @@
+import Auction from "./auction-entity"
 import AuctionRepository from "./auction-repository"
 
 export type CreateAuctionInput = {
@@ -19,15 +20,15 @@ class CreateAuctionUseCase {
         this.auctionRepository = auctionRepository
     }
 
-    async execute(auction: CreateAuctionInput): Promise<CreateAuctionOutput> {
-        auction.auctionId = crypto.randomUUID()
+    async execute(input: CreateAuctionInput): Promise<CreateAuctionOutput> {
+        const auction = new Auction(crypto.randomUUID(), input.startDate, input.endDate, input.minIncrement, input.startAmount)
         try {
             await this.auctionRepository.save(auction)
         } catch (err: any) {
             console.error("Create Auction Error: " + err.message)
             throw new Error("Error trying to create a new auction")
         }
-        return { auctionId: auction.auctionId }
+        return { auctionId: auction.getAuctionId() }
     }
 }
 

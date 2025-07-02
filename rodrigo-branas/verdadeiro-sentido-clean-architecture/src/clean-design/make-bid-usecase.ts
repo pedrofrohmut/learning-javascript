@@ -1,8 +1,8 @@
 import AuctionRepository from "./auction-repository"
+import Bid from "./bid-entity"
 import BidRepository from "./bid-repository"
 
 export type MakeBidInput = {
-    bidId: string
     auctionId: string
     customer: string
     amount: number
@@ -20,36 +20,36 @@ class MakeBidUseCase {
         this.bidRepository = bidRepository
     }
 
-    async execute(bid: MakeBidInput, connections: any[]): Promise<MakeBidOutput> {
+    async execute(input: MakeBidInput, wsConnections: any[]): Promise<MakeBidOutput> {
         // Check auction exists
-        const auctionDb = await this.auctionRepository.get(bid.auctionId)
+        const auctionDb = await this.auctionRepository.get(input.auctionId)
         if (!auctionDb) {
             throw new Error("Auction not found")
         }
 
         // Get highest bid
-        const highestBid = await this.bidRepository.getHighestByAuctionId(auctionDb.auction_id)
+        const highestBid = await this.bidRepository.getHighestByAuctionId(auctionDb.getAuctionId())
 
         // Validate bid customer
-        if (highestBid && bid.customer === highestBid.customer) {
+        if (highestBid && input.customer === highestBid.getCustomer()) {
             throw new Error("Invalid customer. The highest bid customer cannot place new bids.")
         }
 
         // Validate bid amount
         let validBidAmount = 0
         if (highestBid) {
-            validBidAmount = highestBid.amount + auctionDb.min_increment
+            validBidAmount = highestBid.getAmount() + auctionDb.getMinIncrement()
         } else {
-            validBidAmount = auctionDb.start_amount
+            validBidAmount = auctionDb.getStartAmount()
         }
-        if (bid.amount < validBidAmount) {
+        if (input.amount < validBidAmount) {
             throw new Error("The bid amount is too low. Bid must be at least 1010.")
         }
 
         // Validate bid date
-        const bidDate = new Date(bid.date).getTime()
-        const startDate = new Date(auctionDb.start_date).getTime()
-        const endDate = new Date(auctionDb.end_date).getTime()
+        const bidDate = new Date(input.date).getTime()
+        const startDate = new Date(auctionDb.getStartDate()).getTime()
+        const endDate = new Date(auctionDb.getEndDate()).getTime()
         if (bidDate < startDate) {
             throw new Error("Too early. Auction is not opened yet.")
         }
@@ -58,7 +58,7 @@ class MakeBidUseCase {
         }
 
         // Insert new bid
-        bid.bidId = crypto.randomUUID()
+        const bid = new Bid(crypto.randomUUID(), input.auctionId, input.customer, input.amount, input.date)
         try {
             await this.bidRepository.save(bid)
         } catch (err: any) {
@@ -66,11 +66,11 @@ class MakeBidUseCase {
             throw new Error("Error trying to create a new bid")
         }
 
-        for (const connection of connections) {
-            connection.send(Buffer.from(JSON.stringify(bid)))
+        for (const wsConnection of wsConnections) {
+            wsConnection.send(Buffer.from(JSON.stringify(bid)))
         }
 
-        return { bidId: bid.bidId }
+        return { bidId: bid.getBidId() }
     }
 }
 
