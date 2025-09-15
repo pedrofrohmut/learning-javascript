@@ -1,6 +1,8 @@
+import JobListings from "../components/sections/JobListings"
+
 const JobsPage = () => {
     return (
-        <h1>Jobs Page</h1>
+        <JobListings isHome={false} />
     )
 }
 

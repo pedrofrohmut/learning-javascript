@@ -1,8 +1,6 @@
-import { useState } from "react"
-import { FaMapMarker } from "react-icons/fa"
+import { useEffect, useState } from "react"
+import { FaMapMarker, FaSpinner } from "react-icons/fa"
 import { Link } from "react-router"
-
-import jobs from "../../jobs.json"
 
 const JobListing = ({ job }) => {
     const [show, setShow] = useState(false)
@@ -29,7 +27,7 @@ const JobListing = ({ job }) => {
                         {job.location}
                     </div>
                     <Link
-                        to="/job"
+                        to={`/jobs/${job.id}`}
                         className="h-[36px] bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-center text-sm"
                     >
                         Read More
@@ -40,17 +38,76 @@ const JobListing = ({ job }) => {
     )
 }
 
+const fetchJobs = async (isHome) => {
+    const url = isHome ? "/api/jobs?_limit=3" : "/api/jobs"
+    try {
+        const response = await fetch(url)
+        if (!response.ok) {
+            throw new Error("ERROR Error to fecth jobs. Response status: " + response.status)
+        }
+        return response.json()
+    } catch (err) {
+        throw new Error("ERROR Error to fetch jobs: " + err)
+    }
+}
+
 const JobListings = ({ isHome = false }) => {
-    const jobsToShow = isHome ? jobs.slice(0, 3) : jobs
+    const [isLoading, setIsLoading] = useState(false)
+    const [isError, setIsError] = useState(false)
+    const [jobs, setJobs] = useState([])
+
+    useEffect(() => {
+        setIsLoading(true)
+        fetchJobs(isHome)
+            .then(data => {
+                setJobs(data)
+            })
+            .catch(err => {
+                console.error(err)
+                setIsError(true)
+            })
+            .finally(() => {
+                setTimeout(() => setIsLoading(false), 500) // Adds delay for ease transition
+            })
+    }, [setJobs, setIsError, setIsLoading])
+
+    const renderTitle = () => {
+        if (isLoading) {
+            return "Loading..."
+        }
+        if (isError) {
+            return "Error to fetch jobs"
+        }
+        if (isHome) {
+            return "Recent Jobs"
+        }
+        return "Browse Jobs"
+    }
+
+    const renderJobs = () => {
+        if (isLoading || jobs.length == 0) {
+            return null
+        }
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {jobs.map((job, i) => <JobListing job={job} key={i} />)}
+            </div>
+        )
+    }
+
+    const renderLoading = () => (
+        <div className="flex justify-center">
+            <FaSpinner className="animate-spin text-6xl" />
+        </div>
+    )
+
     return (
         <section className="bg-blue-100 px-4 py-10">
             <div className="container-xl lg:container m-auto">
                 <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">
-                    {isHome ? "Recent Jobs" : "Browse Jobs"}
+                    {renderTitle()}
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {jobsToShow.length > 0 && jobsToShow.map((job, index) => <JobListing job={job} key={index} />)}
-                </div>
+                {isLoading && !isError ? renderLoading() : renderJobs()}
             </div>
         </section>
     )
