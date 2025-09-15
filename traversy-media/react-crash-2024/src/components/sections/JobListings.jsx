@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { FaMapMarker } from "react-icons/fa"
+import { Link } from "react-router"
 
 import jobs from "../../jobs.json"
 
@@ -27,27 +28,28 @@ const JobListing = ({ job }) => {
                         <FaMapMarker className="inline text-lg mb-1 mr-1" />
                         {job.location}
                     </div>
-                    <a
-                        href="job.html"
+                    <Link
+                        to="/job"
                         className="h-[36px] bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-center text-sm"
-                        onClick={() => { setShow(!show) }}
                     >
                         Read More
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
     )
 }
 
-const JobListings = () => {
-    const recentJobs = jobs.slice(0, 3)
+const JobListings = ({ isHome = false }) => {
+    const jobsToShow = isHome ? jobs.slice(0, 3) : jobs
     return (
         <section className="bg-blue-100 px-4 py-10">
             <div className="container-xl lg:container m-auto">
-                <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">Browse Jobs</h2>
+                <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">
+                    {isHome ? "Recent Jobs" : "Browse Jobs"}
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {recentJobs.length > 0 && recentJobs.map((job, index) => <JobListing job={job} key={index} />)}
+                    {jobsToShow.length > 0 && jobsToShow.map((job, index) => <JobListing job={job} key={index} />)}
                 </div>
             </div>
         </section>

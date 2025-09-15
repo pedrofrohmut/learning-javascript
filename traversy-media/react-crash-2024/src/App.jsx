@@ -1,21 +1,23 @@
-import Navbar from "./components/Navbar"
-import Hero from "./components/sections/Hero"
-import HomeCards from "./components/sections/HomeCards"
-import JobListings from "./components/sections/JobListings"
+import { BrowserRouter, Route, Routes } from "react-router"
+
+import MainLayout from "./layouts/MainLayout"
+import HomePage from "./pages/HomePage"
+import JobsPage from "./pages/JobsPage"
+import AddJobPage from "./pages/AddJobPage"
+import NotFoundPage from "./pages/NotFoundPage"
 
 const App = () => {
     return (
-        <>
-            <Navbar />
-            <Hero title="Test title" subtitle="This is the test subtitle" />
-            <HomeCards />
-            <JobListings />
-            <section className="m-auto max-w-lg my-10 px-6">
-                <a href="jobs.html" className="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700">
-                    View All Jobs
-                </a>
-            </section>
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="/jobs" element={<JobsPage />} />
+                    <Route path="/add-job" element={<AddJobPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     )
 }
 
