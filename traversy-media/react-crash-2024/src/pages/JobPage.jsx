@@ -1,9 +1,24 @@
 import { FaArrowLeft } from "react-icons/fa"
 import { FaLocationDot } from "react-icons/fa6"
-import { Link, useLoaderData } from "react-router"
+import { Link, useLoaderData, useNavigate } from "react-router"
+import { toast } from "react-toastify"
 
-const JobPage = () => {
+const JobPage = ({ deleteJob }) => {
     const job = useLoaderData()
+
+    const navigate = useNavigate()
+
+    const handleDelete = async (jobId) => {
+        const isConfirmed = window.confirm("Are you sure you want to delete this listing?")
+        if (!isConfirmed) return
+
+        await deleteJob(jobId)
+
+        toast.success("Job deleted successfully")
+
+        navigate("/jobs")
+    }
+
     return (
         <>
             <section>
@@ -67,6 +82,7 @@ const JobPage = () => {
                                 </Link>
                                 <button
                                     className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
+                                    onClick={() => handleDelete(job.id)}
                                 >
                                     Delete Job
                                 </button>
@@ -77,12 +93,6 @@ const JobPage = () => {
             </section>
         </>
     )
-}
-
-export const jobLoader = async ({ params }) => {
-    const response = await fetch(`/api/jobs/${params.id}`)
-    const job = await response.json()
-    return job
 }
 
 export default JobPage

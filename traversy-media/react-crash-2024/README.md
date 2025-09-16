@@ -1,12 +1,13 @@
-# React + Vite
+# React Crash 2024
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+List of links
+- [Youtube Video](https://www.youtube.com/watch?v=LDB4uaJ87e0)
+- [Solution Github](https://github.com/bradtraversy/react-crash-2024)
+- [TailwindCSS](https://tailwindcss.com)
+- [React Router](https://reactrouter.com/home)
+- [Json Server](https://github.com/typicode/json-server)
+- [React Docs](https://react.dev/reference/react)
+- [Javascript Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+- [Javascript Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+- [React Icons](https://www.react-icons.com)
+- [React Toastify](https://github.com/fkhadra/react-toastify)
